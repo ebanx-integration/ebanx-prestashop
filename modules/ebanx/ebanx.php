@@ -362,7 +362,7 @@ class Ebanx extends PaymentModule
         $this->context->smarty->assign(
             array(
                 'action_url' => 'index.php?fc=module&module=ebanx&controller=payment',
-                'image' => __PS_BASE_URI__ . 'modules/ebanx/assets/img/ebanx.png'
+                'image' => __PS_BASE_URI__ . 'modules/ebanx/assets/img/logo.png'
             )
         );
 
@@ -377,5 +377,41 @@ class Ebanx extends PaymentModule
     public function hookPaymentReturn($params)
     {
         return $this->display(__FILE__, 'payment_return.tpl');
+    }
+
+    /**
+     * Get an order status code from Prestashop
+     * @param  string $code
+     * @return int
+     */
+    public static function getOrderStatus($code)
+    {
+        $statuses = array(
+            'CA' => 6
+          , 'OP' => 1
+          , 'PE' => 1
+          , 'CO' => 2
+        );
+
+        return $statuses[$code];
+    }
+
+    public function saveHash($orderId, $hash)
+    {
+        $r = Db::getInstance()->insert('ebanx_order', array(
+            'hash'     => $hash
+          , 'order_id' => $orderId
+        ));
+
+        return $r;
+    }
+
+    public static function findOrderIdByHash($hash)
+    {
+        $sql = 'SELECT order_id FROM ' . _DB_PREFIX_ . 'ebanx_order '
+             . 'WHERE hash = \'' . $hash . '\'';
+             var_dump($sql);
+        $result = Db::getInstance()->getRow($sql);
+        return $result['order_id'];
     }
 }

@@ -1,5 +1,3 @@
-{include file="$tpl_dir./breadcrumb.tpl"}
-
 <style type="text/css" media="all">{literal}div#center_column{ width: 757px; }{/literal}</style>
 
 {capture name=path}{l s='Pagamento via EBANX' mod='ebanx'}{/capture}
