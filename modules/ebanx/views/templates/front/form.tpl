@@ -25,7 +25,9 @@
         <select name="ebanx_installments" id="ebanx_installments_number">
           <option value="1">1x {displayPrice price=$total}</option>
           {for $i=2 to $max_installments}
-          <option value="{$i}">{$i}x {displayPrice price=$total_installments/$i}</option>
+            {if ($total_installments/$i > 20 && $currency_code == "BRL") || (($total_installments * 2.5) / $i > 20 && $currency_code != "BRL")}
+            <option value="{$i}">{$i}x {displayPrice price=$total_installments/$i}</option>
+            {/if}
           {/for}
         </select>
       </td>
