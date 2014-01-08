@@ -58,15 +58,30 @@ class Ebanx extends PaymentModule
      */
     public function uninstall()
     {
+        // Delete settings
         if (!Configuration::deleteByName('EBANX_TESTING')
          || !Configuration::deleteByName('EBANX_INTEGRATION_KEY')
          || !Configuration::deleteByName('EBANX_INSTALLMENTS_ACTIVE')
          || !Configuration::deleteByName('EBANX_INSTALLMENTS_NUMBER')
          || !Configuration::deleteByName('EBANX_INTEREST_RATE')
+         || !Configuration::deleteByName('EBANX_STATUS_OPEN')
          || !parent::uninstall())
         {
                 return false;
         }
+
+        // Delete custom order status
+        // if (!Db::getInstance()->delete('order_state', "module_name = 'ebanx'"))
+        // {
+        //     return false;
+        // }
+
+        // Delete custom order status translations
+        // if (!Db::getInstance()->delete('order_state_lang', "name LIKE '%EBANX%'"))
+        // {
+        //     return false;
+        // }
+
 
         return true;
     }
@@ -98,6 +113,43 @@ class Ebanx extends PaymentModule
         {
             return false;
         }
+
+        // Create a custom order status
+        $status = array(
+            'invoice'     => 1
+          , 'send_email'  => 0
+          , 'module_name' => $this->name
+          , 'color'       => 'RoyalBlue'
+          , 'unremovable' => 1
+          , 'hidden'      => 0
+          , 'logable'     => 1
+          , 'delivery'    => 0
+          , 'shipped'     => 0
+          , 'paid'        => 0
+          , 'deleted'     => 0
+        );
+
+        if (!Db::getInstance()->insert('order_state', $status))
+        {
+            return false;
+        }
+
+        // Setup status translation
+        $statusId = (int) Db::getInstance()->Insert_ID();
+        $language = array(
+            'id_lang'        => 1
+          , 'id_order_state' => $statusId
+          , 'name'           => 'Awaiting EBANX payment'
+          , 'template'       => ''
+        ,
+        );
+
+        if (!Db::getInstance()->insert('order_state_lang', $language))
+        {
+            return false;
+        }
+
+        Configuration::updateValue('EBANX_STATUS_OPEN', $statusId);
 
         return true;
     }
@@ -388,8 +440,8 @@ class Ebanx extends PaymentModule
     {
         $statuses = array(
             'CA' => 6
-          , 'OP' => 1
-          , 'PE' => 1
+          , 'OP' => Configuration::get('EBANX_STATUS_OPEN')
+          , 'PE' => Configuration::get('EBANX_STATUS_OPEN')
           , 'CO' => 2
         );
 

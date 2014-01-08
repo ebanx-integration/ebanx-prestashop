@@ -14,7 +14,7 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
         $total = floatval(number_format($cart->getOrderTotal(true, 3), 2, '.', ''));
 
         $ebanx = new Ebanx();
-        $ebanx->validateOrder($cart->id, 1, $total, $ebanx->displayName);
+        $ebanx->validateOrder($cart->id, Configuration::get('EBANX_STATUS_OPEN'), $total, $ebanx->displayName);
 
         $order = new Order($ebanx->currentOrder);
 
