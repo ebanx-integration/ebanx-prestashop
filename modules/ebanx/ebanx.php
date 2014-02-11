@@ -44,7 +44,7 @@ class Ebanx extends PaymentModule
     {
         $this->name     = 'ebanx';
         $this->tab      = 'payments_gateways';
-        $this->version  = '1.0.0';
+        $this->version  = '1.0.1';
         $this->author   = 'EBANX';
 
         $this->currencies = true;
@@ -326,7 +326,7 @@ class Ebanx extends PaymentModule
                 ),
                 array(
                     'type' => 'select',
-                    'label' => $this->l('Installments'),
+                    'label' => $this->l('Installments (direct mode only)'),
                     'name' => 'EBANX_INSTALLMENTS_ACTIVE',
                     'required' => true,
                     'options' => array(

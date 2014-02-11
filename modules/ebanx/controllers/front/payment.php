@@ -77,7 +77,7 @@ class EbanxPaymentModuleFrontController extends ModuleFrontController
           , 'total'               => $total
           , 'image'               => __PS_BASE_URI__ . 'modules/ebanx/assets/img/ebanx.png'
           , 'total_installments'  => $totalInstallments
-          , 'enable_installments' => (intval(Configuration::get('EBANX_INSTALLMENTS_ACTIVE')) == 1)
+          , 'enable_installments' => false //(intval(Configuration::get('EBANX_INSTALLMENTS_ACTIVE')) == 1)
           , 'max_installments'    => $maxInstallments
           , 'currency_code'       => $this->context->currency->iso_code
         ));

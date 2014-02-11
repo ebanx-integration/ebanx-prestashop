@@ -15,6 +15,8 @@
 <h3>{l s='Pagamento via EBANX' mod='ebanx'}</h3>
 <form action="{$action_url}" method="post">
   <img src="{$image}" alt="{l s='ebanx' mod='ebanx'}" style="margin: 0px 10px 5px 0px;" />
+
+  {if $enable_installments}
   <p style="margin-top:20px;">
     {l s='Opções de parcelamento: ' mod='ebanx'}
   </p>
@@ -40,6 +42,7 @@
       </td>
     </tr>
   </table>
+  {/if}
 
   <p class="cart_navigation">
     <input type="submit" name="submit" value="{l s='Finalizar compra' mod='ebanx'}" class="exclusive_large" />

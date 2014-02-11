@@ -25,4 +25,5 @@ git clone --recursive https://github.com/ebanx/ebanx-prestashop.git
 8. That's all!
 
 ## Changelog
+1.0.1: remove installments from checkout mode
 1.0.0: first release
