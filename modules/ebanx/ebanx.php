@@ -75,6 +75,9 @@ class Ebanx extends PaymentModule
          || !Configuration::deleteByName('EBANX_INSTALLMENTS_NUMBER')
          || !Configuration::deleteByName('EBANX_INTEREST_RATE')
          || !Configuration::deleteByName('EBANX_STATUS_OPEN')
+         || !Configuration::deleteByName('EBANX_ENABLE_BOLETO')
+         || !Configuration::deleteByName('EBANX_ENABLE_CREDITCARD')
+         || !Configuration::deleteByName('EBANX_ENABLE_TEF')
          || !parent::uninstall())
         {
                 return false;
@@ -116,11 +119,15 @@ class Ebanx extends PaymentModule
         if (!parent::install()
          || !$this->registerHook('payment')
          || !$this->registerHook('paymentReturn')
+         || !$this->registerHook('header')
          || !Configuration::updateValue('EBANX_TESTING', true)
          || !Configuration::updateValue('EBANX_INTEGRATION_KEY', '')
          || !Configuration::updateValue('EBANX_INSTALLMENTS_ACTIVE', false)
          || !Configuration::updateValue('EBANX_INSTALLMENTS_NUMBER', 6)
-         || !Configuration::updateValue('EBANX_INTEREST_RATE', 10.0))
+         || !Configuration::updateValue('EBANX_INTEREST_RATE', 10.0)
+         || !Configuration::updateValue('EBANX_ENABLE_CREDITCARD', false)
+         || !Configuration::updateValue('EBANX_ENABLE_BOLETO', true)
+         || !Configuration::updateValue('EBANX_ENABLE_TEF', true))
         {
             return false;
         }
@@ -166,6 +173,17 @@ class Ebanx extends PaymentModule
     }
 
     /**
+     * Adds assets to header
+     * @return void
+     */
+    public function hookHeader()
+    {
+        Tools::addCSS($this->_path . 'assets/css/app.css', 'all');
+        Tools::addJS($this->_path . 'assets/js/app.js');
+        return true;
+    }
+
+    /**
      * Creates ebanx_order table to store EBANX transaction hashes
      * @return boolean
      */
@@ -177,7 +195,9 @@ class Ebanx extends PaymentModule
         $sql = "CREATE TABLE IF NOT EXISTS `{$prefix}ebanx_order` (
             `id` int(11) unsigned NOT NULL auto_increment,
             `hash` varchar(255) NOT NULL,
-            `order_id` int(10) unsigned NOT NULL ,
+            `boleto_url` TEXT NOT NULL,
+            `payment_method` varchar(255) NOT NULL,
+            `order_id` int(10) unsigned NOT NULL,
             PRIMARY KEY  (`id`)
             ) ENGINE = {$engine}
                 DEFAULT CHARSET=utf8  auto_increment=1;";
@@ -286,6 +306,9 @@ class Ebanx extends PaymentModule
         Configuration::updateValue('EBANX_INTEGRATION_KEY', Tools::getValue('EBANX_INTEGRATION_KEY'));
         Configuration::updateValue('EBANX_INSTALLMENTS_ACTIVE', intval(Tools::getValue('EBANX_INSTALLMENTS_ACTIVE')));
         Configuration::updateValue('EBANX_INSTALLMENTS_NUMBER', intval(Tools::getValue('EBANX_INSTALLMENTS_NUMBER')));
+        Configuration::updateValue('EBANX_ENABLE_BOLETO', intval(Tools::getValue('EBANX_ENABLE_BOLETO')));
+        Configuration::updateValue('EBANX_ENABLE_CREDITCARD', intval(Tools::getValue('EBANX_ENABLE_CREDITCARD')));
+        Configuration::updateValue('EBANX_ENABLE_TEF', intval(Tools::getValue('EBANX_ENABLE_TEF')));
     }
 
     /**
@@ -326,7 +349,7 @@ class Ebanx extends PaymentModule
                 ),
                 array(
                     'type' => 'select',
-                    'label' => $this->l('Installments (direct mode only)'),
+                    'label' => $this->l('Installments'),
                     'name' => 'EBANX_INSTALLMENTS_ACTIVE',
                     'required' => true,
                     'options' => array(
@@ -363,6 +386,48 @@ class Ebanx extends PaymentModule
                     'size' => 10,
                     'required' => false
                 ),
+                array(
+                    'type' => 'select',
+                    'label' => $this->l('Enable boleto payments'),
+                    'name' => 'EBANX_ENABLE_BOLETO',
+                    'required' => true,
+                    'options' => array(
+                        'query' => array(
+                            array('label' => 'Enabled',  'value' => 1),
+                            array('label' => 'Disabled', 'value' => 0)
+                        ),
+                        'id'   => 'value',
+                        'name' => 'label'
+                    )
+                ),
+                array(
+                    'type' => 'select',
+                    'label' => $this->l('Enable credit card payments'),
+                    'name' => 'EBANX_ENABLE_CREDITCARD',
+                    'required' => true,
+                    'options' => array(
+                        'query' => array(
+                            array('label' => 'Enabled',  'value' => 1),
+                            array('label' => 'Disabled', 'value' => 0)
+                        ),
+                        'id'   => 'value',
+                        'name' => 'label'
+                    )
+                ),
+                array(
+                    'type' => 'select',
+                    'label' => $this->l('Enable TEF payments'),
+                    'name' => 'EBANX_ENABLE_TEF',
+                    'required' => true,
+                    'options' => array(
+                        'query' => array(
+                            array('label' => 'Enabled',  'value' => 1),
+                            array('label' => 'Disabled', 'value' => 0)
+                        ),
+                        'id'   => 'value',
+                        'name' => 'label'
+                    )
+                )
             ),
             'submit' => array(
                 'title' => $this->l('Save'),
@@ -406,6 +471,9 @@ class Ebanx extends PaymentModule
         $helper->fields_value['EBANX_INSTALLMENTS_ACTIVE'] = Configuration::get('EBANX_INSTALLMENTS_ACTIVE');
         $helper->fields_value['EBANX_INSTALLMENTS_NUMBER'] = Configuration::get('EBANX_INSTALLMENTS_NUMBER');
         $helper->fields_value['EBANX_INTEREST_RATE']       = Configuration::get('EBANX_INTEREST_RATE');
+        $helper->fields_value['EBANX_ENABLE_BOLETO']       = Configuration::get('EBANX_ENABLE_BOLETO');
+        $helper->fields_value['EBANX_ENABLE_CREDITCARD']   = Configuration::get('EBANX_ENABLE_CREDITCARD');
+        $helper->fields_value['EBANX_ENABLE_TEF']          = Configuration::get('EBANX_ENABLE_TEF');
 
         return $helper->generateForm($fields_form);
     }
@@ -424,8 +492,15 @@ class Ebanx extends PaymentModule
 
         $this->context->smarty->assign(
             array(
-                'action_url' => 'index.php?fc=module&module=ebanx&controller=payment',
-                'image' => __PS_BASE_URI__ . 'modules/ebanx/assets/img/logo.png'
+                'action_url_boleto' => 'index.php?fc=module&module=ebanx&controller=payment&method=boleto'
+              , 'image_boleto'      => __PS_BASE_URI__ . 'modules/ebanx/assets/img/boleto.png'
+              , 'action_url_cc'     => 'index.php?fc=module&module=ebanx&controller=payment&method=creditcards'
+              , 'image_cc'          => __PS_BASE_URI__ . 'modules/ebanx/assets/img/creditcard.png'
+              , 'action_url_tef'    => 'index.php?fc=module&module=ebanx&controller=payment&method=tef'
+              , 'image_tef'         => __PS_BASE_URI__ . 'modules/ebanx/assets/img/tef.png'
+              , 'ebanx_boleto_enabled' => intval(Configuration::get('EBANX_ENABLE_BOLETO')) == 1
+              , 'ebanx_cc_enabled'     => intval(Configuration::get('EBANX_ENABLE_CREDITCARD')) == 1
+              , 'ebanx_tef_enabled'    => intval(Configuration::get('EBANX_ENABLE_TEF')) == 1
             )
         );
 
@@ -459,11 +534,13 @@ class Ebanx extends PaymentModule
         return $statuses[$code];
     }
 
-    public function saveHash($orderId, $hash)
+    public function saveOrderData($orderId, $hash, $method, $boleto = '')
     {
         $r = Db::getInstance()->insert('ebanx_order', array(
-            'hash'     => $hash
-          , 'order_id' => $orderId
+            'hash'       => $hash
+          , 'payment_method' => $method
+          , 'boleto_url' => $boleto
+          , 'order_id'   => $orderId
         ));
 
         return $r;
@@ -473,8 +550,16 @@ class Ebanx extends PaymentModule
     {
         $sql = 'SELECT order_id FROM ' . _DB_PREFIX_ . 'ebanx_order '
              . 'WHERE hash = \'' . $hash . '\'';
-             var_dump($sql);
+
         $result = Db::getInstance()->getRow($sql);
         return $result['order_id'];
+    }
+
+    public static function findEbanxOrderData($hash)
+    {
+        $sql = 'SELECT * FROM ' . _DB_PREFIX_ . 'ebanx_order '
+             . 'WHERE hash = \'' . $hash . '\'';
+
+        return Db::getInstance()->getRow($sql);
     }
 }

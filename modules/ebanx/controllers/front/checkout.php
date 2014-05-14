@@ -44,53 +44,69 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
         $customer = new Customer($cart->id_customer);
         $currency = new Currency($cart->id_currency);
         $address  = new Address($cart->id_address_invoice);
+        $state    = new State($address->id_state);
 
         $total = floatval(number_format($cart->getOrderTotal(true, 3), 2, '.', ''));
 
-        // Create a new order via validateOrder()
-        $ebanx = new Ebanx();
-        $ebanx->validateOrder($cart->id, Configuration::get('EBANX_STATUS_OPEN'), $total, $ebanx->displayName);
-
-        $order = new Order($ebanx->currentOrder);
+        $streetNumber = preg_replace('/\D/', '', $address->address1);
+        $streetNumber = ($streetNumber > 0) ? $streetNumber : '1';
 
         $params = array(
-            'payment_type_code' => '_all'
-          , 'amount'            => $cart->getOrderTotal(true)
-          , 'currency_code'     => $currency->iso_code
-          , 'merchant_payment_code' => $cart->id
-          , 'name'         => $customer->firstname . ' ' . $customer->lastname
-          , 'email'        => $customer->email
-          , 'address'      => $address->address1 . ' ' . $address->address2
-          , 'zipcode'      => $address->postcode
-          , 'city'         => $address->city
-          , 'phone_number' => $address->phone
+            'mode'      => 'full'
+          , 'operation' => 'request'
+          , 'payment'   => array(
+              'payment_type_code' => Tools::getValue('ebanx_payment_type_code')
+            , 'amount_total'      => $cart->getOrderTotal(true)
+            , 'currency_code'     => $currency->iso_code
+            , 'merchant_payment_code' => $cart->id
+            , 'name'          => $customer->firstname . ' ' . $customer->lastname
+            , 'birth_date'    => Tools::getValue('ebanx_birth_date')
+            , 'document'      => Tools::getValue('ebanx_document')
+            , 'email'         => $customer->email
+            , 'address'       => $address->address1 . ' ' . $address->address2
+            , 'street_number' => $streetNumber
+            , 'state'         => $state->iso_code
+            , 'zipcode'       => $address->postcode
+            , 'city'          => $address->city
+            , 'country'       => 'br'
+            , 'phone_number'  => $address->phone
+          )
         );
-
-        // Adds installments to order and updates order total if they are enabled.
-        $installments = Tools::getValue('ebanx_installments');
-        if (intval($installments) > 1)
-        {
-            $params['instalments']       = $installments;
-            $params['payment_type_code'] = Tools::getValue('ebanx_installments_card');
-
-            $interestRate = floatval(Configuration::get('EBANX_INTEREST_RATE'));
-            if ($interestRate > 0)
-            {
-              $params['amount'] = ($total * (100 + $interestRate)) / 100.0;
-            }
-        }
 
         $response = \Ebanx\Ebanx::doRequest($params);
 
         if ($response->status == 'SUCCESS')
         {
-            $ebanx->saveHash($order->id, $response->payment->hash);
-            Tools::redirect($response->redirect_url);
+            // Create a new order via validateOrder()
+            $ebanx = new Ebanx();
+            $ebanx->validateOrder($cart->id, Configuration::get('EBANX_STATUS_OPEN'), $total, $ebanx->displayName);
+
+            // If the request was successfull, create a new order
+            $order = new Order($ebanx->currentOrder);
+
+            $method = Tools::getValue('ebanx_payment_method');
+            $hash   = $response->payment->hash;
+
+            if ($method == 'boleto')
+            {
+                $ebanx->saveOrderData($order->id, $hash, $method, $response->payment->boleto_url);
+                Tools::redirect('index.php?fc=module&module=ebanx&controller=success&hash=' . $hash);
+            }
+            else if ($method == 'tef')
+            {
+              $ebanx->saveOrderData($order->id, $hash, $method);
+              Tools::redirect($response->redirect_url);
+            }
+            else
+            {
+              $ebanx->saveOrderData($order->id, $hash, $method);
+              Tools::redirect('index.php?fc=module&module=ebanx&controller=success&hash=' . $hash);
+            }
         }
         else
         {
-            var_dump($response);
-            die('Erro!');
+            // Go back to the other screen
+            Tools::redirect($_SERVER['HTTP_REFERER'] . '&ebanx_error=' . urlencode($response->status_message));
         }
     }
 }
