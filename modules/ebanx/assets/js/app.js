@@ -70,4 +70,37 @@ $(document).ready(function() {
       return;
     }
   });
+
+  /**
+   * TEF form validation
+   */
+  $('#ebanx_form_tef').on('submit', function(e) {
+    var cpf       = $('#ebanx_document').val()
+      , birthDate = $('#ebanx_birth_date').val()
+      , bank      = $('#ebanx_payment_type_code').val()
+      , valid     = true;
+
+    clearErrors();
+
+    if (!validateCpf(cpf)) {
+      valid = false;
+      addError('O CPF digitado é inválido.');
+    }
+
+    if (!birthDate.match(/\d\d\/\d\d\/\d\d\d\d/)) {
+      valid = false;
+      addError('A data de nascimento é inválida.');
+    }
+
+    if (bank.length == 0) {
+      valid = false;
+      addError('É necessário escolher o banco.');
+    }
+
+    if (!valid) {
+      $('.ebanx-error').show();
+      e.preventDefault();
+      return;
+    }
+  });
 });

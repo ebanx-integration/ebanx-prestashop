@@ -32,6 +32,7 @@
   font-weight: bold;
   margin: 0 0 20px 0;
   display: none;
+  line-height: 1.5em;
 }
 
 .request-error {
@@ -42,6 +43,7 @@
   font-size: 1.2em;
   font-weight: bold;
   margin: 0 0 20px 0;
+  line-height: 1.5em;
 }
 
 .ebanx-success {

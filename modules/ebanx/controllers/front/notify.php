@@ -31,7 +31,8 @@
  */
 
 require_once dirname(dirname(dirname(__FILE__))) . '/bootstrap.php';
-
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
 /**
  * The notify action controller. It's called by the EBANX robot when the payment
  * is updated.
@@ -43,37 +44,56 @@ class EbanxNotifyModuleFrontController extends ModuleFrontController
     parent::init();
 
     // It may send a single hash (string) or multiple hashes (array of strings).
-    // We have to deal with them laters
-    $hashes = Tools::getValue('hash_codes');
+    // We have to deal with them later
+    $hashes = explode(',', Tools::getValue('hash_codes'));
 
-    if (is_array($hash))
+    foreach ($hashes as $hash)
     {
-      foreach ($hashes as $hash)
+      if ($this->_updateOrder($hash))
       {
-        $this->_updateOrder($hash);
+        echo 'OK: ' . $hash . '<br>';
+      }
+      else
+      {
+        echo 'NOK: ' . $hash . '<br>';
       }
     }
-    else
-    {
-      $this->_updateOrder($hashes);
-    }
 
-    echo 'OK!';
     exit();
   }
 
   /**
    * Updates an order status
    * @param  string $hash The EBANX payment hash
-   * @return void
+   * @return boolean
    */
   protected function _updateOrder($hash)
   {
-      $response = \Ebanx\Ebanx::doQuery(array('hash' => $hash));
+    $response = \Ebanx\Ebanx::doQuery(array('hash' => $hash));
 
-      $status = Ebanx::getOrderStatus($response->payment->status);
+    if ($response->status == 'ERROR')
+    {
+      return false;
+    }
 
-      $order = new Order(Ebanx::findOrderIdByHash($hash));
+    $status  = Ebanx::getOrderStatus($response->payment->status);
+    $orderId = Ebanx::findOrderIdByHash($hash);
+
+    if (intval($orderId) == 0)
+    {
+      return false;
+    }
+
+    try
+    {
+      $order = new Order($orderId);
       $order->setCurrentState($status);
+    }
+    catch (Exception $e)
+    {
+      return false;
+    }
+
+    return true;
   }
 }
