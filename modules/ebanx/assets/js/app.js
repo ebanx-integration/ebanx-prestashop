@@ -103,4 +103,91 @@ $(document).ready(function() {
       return;
     }
   });
+
+  /**
+   * CC form validation
+   */
+  $('#ebanx_form_cc').on('submit', function(e) {
+    var cpf        = $('#ebanx_document').val()
+      , birthDate  = $('#ebanx_birth_date').val()
+      , ccName     = $('#ebanx_cc_name').val()
+      , ccNumber   = $('#ebanx_cc_number').val()
+      , ccCVV      = $('#ebanx_cc_cvv').val()
+      , ccExpMonth = $('#ebanx_cc_exp_month').val()
+      , ccExpYear  = $('#ebanx_cc_exp_year').val()
+      , ccScheme   = $('#ebanx_payment_type_code').val()
+      , valid      = true;
+
+    clearErrors();
+
+    if (!validateCpf(cpf)) {
+      valid = false;
+      addError('O CPF digitado é inválido.');
+    }
+
+    if (ccName.length == 0) {
+      valid = false;
+      addError('É necessário digitar o nome exibido no cartão.');
+    }
+
+    if (!birthDate.match(/^[\d]{2}\/[\d]{2}\/[\d]{4}$/)) {
+      valid = false;
+      addError('A data de nascimento é inválida.');
+    }
+
+    if (!validateCreditCard(ccNumber)) {
+      valid = false;
+      addError('O número do cartão de crédito é inválido.');
+    }
+
+    if (!ccCVV.match(/[\d]{3,4}/)) {
+      valid = false;
+      addError('O CVV é inválido.');
+    }
+
+    if (!ccExpMonth.match(/[\d]{1,2}/)) {
+      valid = false;
+      addError('O mês de validade é inválido.');
+    }
+
+    if (!ccExpYear.match(/[\d]{4}/)) {
+      valid = false;
+      addError('O ano de validade é inválido.');
+    }
+
+    if (ccScheme.length == 0) {
+      addError('É necessário selecionar a bandeira do cartão.');
+    }
+
+    if (!valid) {
+      $('.ebanx-error').show();
+      e.preventDefault();
+      return;
+    }
+  });
+
+  /**
+   * Validate CC number (Luhn)
+   */
+  function validateCreditCard(ccNumber) {
+    var sum = 0
+      , digits = ccNumber.length
+      , parity = digits % 2;
+
+    for (var i = 0; i < digits; i++) {
+      var digit = parseInt(ccNumber.charAt(i));
+
+      if (i % 2 == parity) {
+        digit *= 2;
+      }
+
+      if (digit > 9) {
+        digit -= 9;
+      }
+
+      sum += digit;
+    }
+
+    return (sum % 10) == 0;
+  }
 });

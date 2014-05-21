@@ -1,9 +1,9 @@
 <style type="text/css" media="all">{literal}div#center_column{ width: 757px; }{/literal}</style>
 
-{capture name=path}{l s='Pagamento via EBANX' mod='ebanx'}{/capture}
+{capture name=path}{l s='Cartão de crédito' mod='ebanx'}{/capture}
 {include file="$tpl_dir./breadcrumb.tpl"}
 
-<h2>{l s='Resumo da compra' mod='ebanx'}</h2>
+<h2>{l s='Finalizar compra' mod='ebanx'}</h2>
 
 {assign var='current_step' value='payment'}
 {include file="$tpl_dir./order-steps.tpl"}
@@ -12,64 +12,79 @@
   <p class="warning">{l s='Seu carrinho de compras está vazio.'}</p>
 {else}
 
-<h3>{l s='Pagamento via EBANX' mod='ebanx'}</h3>
-<form action="{$action_url}" method="post">
-  <img src="{$image}" alt="{l s='ebanx' mod='ebanx'}" style="margin: 0px 10px 5px 0px;" />
+<h3>{l s='Cartão de crédito' mod='ebanx'}</h3>
 
-  {if $enable_installments}
-  <p style="margin-top:20px;">
-    {l s='Opções de parcelamento: ' mod='ebanx'}
-  </p>
-  <table>
-    <tr>
-      <td width="100">{l s='Parcelas' mod='ebanx'}</td>
-      <td>
-        <select name="ebanx_installments" id="ebanx_installments_number">
-          <option value="1">1x {displayPrice price=$total}</option>
-          {for $i=2 to $max_installments}
-            <option value="{$i}">{$i}x {displayPrice price=$total_installments/$i}</option>
-          {/for}
-        </select>
-      </td>
-    </tr>
-    <tr id="ebanx_installments_card">
-      <td>{l s='Cartão de crédito' mod='ebanx'}</td>
-      <td>
-        <select name="ebanx_installments_card">
-          <option value="visa">Visa</option>
-          <option value="mastercard">MasterCard</option>
-        </select>
-      </td>
-    </tr>
-  </table>
-  {/if}
+<div class="ebanx-error">
+</div>
+
+{if strlen($request_error)}
+<div class="request-error">
+  {$request_error}
+</div>
+{/if}
+
+<form action="{$action_url}" method="post" id="ebanx_form_cc">
+  <input type="hidden" name="ebanx_payment_method" value="creditcard" />
+
+  <fieldset class="ebanx-form">
+    <p class="required text">
+      <label for="ebanx_document">CPF <sup>*</sup></label>
+      <input type="text" id="ebanx_document" name="ebanx_document" value="" required>
+    </p>
+
+    <p class="required text">
+      <label for="ebanx_birth_date">Data de nascimento <sup>*</sup></label>
+      <input type="text" id="ebanx_birth_date" name="ebanx_birth_date" value="" required>
+    </p>
+
+    <p class="required text">
+      <label for="ebanx_cc_name">Nome no cartão <sup>*</sup></label>
+      <input type="text" id="ebanx_cc_name" name="ebanx_cc_name" value="" required>
+    </p>
+
+
+    <p class="required text">
+      <label for="ebanx_cc_number">Número do cartão <sup>*</sup></label>
+      <input type="text" id="ebanx_cc_number" name="ebanx_cc_number" value="" required>
+    </p>
+
+    <p class="required text">
+      <label for="ebanx_cc_cvv">CVV <sup>*</sup></label>
+      <input type="text" id="ebanx_cc_cvv" name="ebanx_cc_cvv" value="" required>
+    </p>
+
+    <p class="required text">
+      <label>Data de validade <sup>*</sup></label>
+      <select id="ebanx_cc_exp_month" name="ebanx_cc_exp_month" required>
+        <option></option>
+        {for $i = 1 to 12}
+          <option value="{$i}">{$i}</option>
+        {/for}
+      </select>
+
+      <select id="ebanx_cc_exp_year" name="ebanx_cc_exp_year" required>
+        <option></option>
+        {for $i = date('Y') to (date('Y') + 15)}
+          <option value="{$i}">{$i}</option>
+        {/for}
+      </select>
+    </p>
+
+    <p class="required text">
+      <label for="ebanx_birth_date">Bandeira <sup>*</sup></label>
+      <select id="ebanx_payment_type_code" name="ebanx_payment_type_code" required>
+        <option></option>
+        <option value="diners">Diners</option>
+        <option value="hipercard">Hipercard</option>
+        <option value="mastercard">Mastercard</option>
+        <option value="visa">Visa</option>
+      </select>
+    </p>
+  </fieldset>
 
   <p class="cart_navigation">
     <input type="submit" name="submit" value="{l s='Finalizar compra' mod='ebanx'}" class="exclusive_large" />
-    <a href="{$link->getPageLink('order', true, NULL, "step=3")}" class="button_large">{l s='Outros formas de pagamento' mod='ebanx'}</a>
+    <a href="{$link->getPageLink('order', true, NULL, "step=3")}" class="button_large">{l s='Outras formas de pagamento' mod='ebanx'}</a>
   </p>
 </form>
 {/if}
-
-{literal}
-<script>
-    var installmentsNumber = document.getElementById('ebanx_installments_number')
-      , installmentsCard   = document.getElementById('ebanx_installments_card');
-
-    function toggleInstallmentsCards() {
-        installmentsNumber.disabled = false;
-        installmentsCard.disabled = false;
-
-        if (installmentsNumber.value == 1) {
-            installmentsCard.style.display = 'none';
-        } else {
-            installmentsCard.style.display = 'table-row';
-        }
-    }
-
-    installmentsNumber.onchange = toggleInstallmentsCards;
-
-    toggleInstallmentsCards();
-    setTimeout(toggleInstallmentsCards, 1000);
-</script>
-{/literal}

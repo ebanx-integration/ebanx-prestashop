@@ -45,9 +45,11 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
         $currency = new Currency($cart->id_currency);
         $address  = new Address($cart->id_address_invoice);
         $state    = new State($address->id_state);
+        $method   = Tools::getValue('ebanx_payment_method');
 
         $total = floatval(number_format($cart->getOrderTotal(true, 3), 2, '.', ''));
 
+        // Fix missing street number
         $streetNumber = preg_replace('/\D/', '', $address->address1);
         $streetNumber = ($streetNumber > 0) ? $streetNumber : '1';
 
@@ -73,6 +75,17 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
           )
         );
 
+        // Add credit card fields to request
+        if ($method == 'creditcard')
+        {
+            $params['payment']['creditcard'] = array(
+                'card_number'   => Tools::getValue('ebanx_cc_number')
+              , 'card_name'     => Tools::getValue('ebanx_cc_name')
+              , 'card_due_date' => str_pad(Tools::getValue('ebanx_cc_exp_month'), 2, 0, STR_PAD_LEFT) . '/' . Tools::getValue('ebanx_cc_exp_year')
+              , 'card_cvv'      => Tools::getValue('ebanx_cc_cvv')
+            );
+        }
+
         $response = \Ebanx\Ebanx::doRequest($params);
 
         if ($response->status == 'SUCCESS')
@@ -83,11 +96,9 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
 
             // If the request was successfull, create a new order
             $order = new Order($ebanx->currentOrder);
+            $hash  = $response->payment->hash;
 
-            $method = Tools::getValue('ebanx_payment_method');
-            $hash   = $response->payment->hash;
-
-            if ($method == 'boleto')
+            if ($method == 'boleto' || $method == 'creditcard')
             {
                 $ebanx->saveOrderData($order->id, $hash, $method, $response->payment->boleto_url);
                 Tools::redirect('index.php?fc=module&module=ebanx&controller=success&hash=' . $hash);

@@ -44,7 +44,7 @@ class Ebanx extends PaymentModule
     {
         $this->name     = 'ebanx';
         $this->tab      = 'payments_gateways';
-        $this->version  = '1.0.1';
+        $this->version  = '2.0.0';
         $this->author   = 'EBANX';
 
         $this->currencies = true;
@@ -494,7 +494,7 @@ class Ebanx extends PaymentModule
             array(
                 'action_url_boleto' => 'index.php?fc=module&module=ebanx&controller=payment&method=boleto'
               , 'image_boleto'      => __PS_BASE_URI__ . 'modules/ebanx/assets/img/boleto.png'
-              , 'action_url_cc'     => 'index.php?fc=module&module=ebanx&controller=payment&method=creditcards'
+              , 'action_url_cc'     => 'index.php?fc=module&module=ebanx&controller=payment&method=creditcard'
               , 'image_cc'          => __PS_BASE_URI__ . 'modules/ebanx/assets/img/creditcard.png'
               , 'action_url_tef'    => 'index.php?fc=module&module=ebanx&controller=payment&method=tef'
               , 'image_tef'         => __PS_BASE_URI__ . 'modules/ebanx/assets/img/tef.png'
