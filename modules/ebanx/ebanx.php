@@ -44,7 +44,7 @@ class Ebanx extends PaymentModule
     {
         $this->name     = 'ebanx';
         $this->tab      = 'payments_gateways';
-        $this->version  = '2.0.0';
+        $this->version  = '2.0.1';
         $this->author   = 'EBANX';
 
         $this->currencies = true;
@@ -192,7 +192,9 @@ class Ebanx extends PaymentModule
         $prefix = _DB_PREFIX_;
         $engine = _MYSQL_ENGINE_;
 
-        $sql = "CREATE TABLE IF NOT EXISTS `{$prefix}ebanx_order` (
+        $sql = "
+            DROP TABLE IF EXISTS `{$prefix}ebanx_order`;
+            CREATE TABLE IF NOT EXISTS `{$prefix}ebanx_order` (
             `id` int(11) unsigned NOT NULL auto_increment,
             `hash` varchar(255) NOT NULL,
             `boleto_url` TEXT NOT NULL,

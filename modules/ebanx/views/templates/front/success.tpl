@@ -10,7 +10,7 @@ Seu pagamento foi recebido com sucesso!
   <p>Clique no botão abaixo para imprimir seu boleto:</p>
   <p>
     <a target="_blank" href="{$ebanx['boleto_url']}">
-      <img src="{$img_path}ebanx-print-boleto.png" alt="Imprimir boleto">
+      <img src="{$modules_dir}/ebanx/assets/img/ebanx-print-boleto.png" alt="Imprimir boleto">
     </a>
   </p>
 {/if}

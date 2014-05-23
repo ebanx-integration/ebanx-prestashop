@@ -90,6 +90,8 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
 
         if ($response->status == 'SUCCESS')
         {
+            $baseUrl = _PS_BASE_URL_ . __PS_BASE_URI__;
+
             // Create a new order via validateOrder()
             $ebanx = new Ebanx();
             $ebanx->validateOrder($cart->id, Configuration::get('EBANX_STATUS_OPEN'), $total, $ebanx->displayName);
@@ -98,10 +100,10 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
             $order = new Order($ebanx->currentOrder);
             $hash  = $response->payment->hash;
 
-            if ($method == 'boleto' || $method == 'creditcard')
+            if ($method == 'boleto')
             {
                 $ebanx->saveOrderData($order->id, $hash, $method, $response->payment->boleto_url);
-                Tools::redirect('index.php?fc=module&module=ebanx&controller=success&hash=' . $hash);
+                Tools::redirect($baseUrl . 'index.php?fc=module&module=ebanx&controller=success&hash=' . $hash);
             }
             else if ($method == 'tef')
             {
@@ -111,7 +113,7 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
             else
             {
               $ebanx->saveOrderData($order->id, $hash, $method);
-              Tools::redirect('index.php?fc=module&module=ebanx&controller=success&hash=' . $hash);
+              Tools::redirect($baseUrl . 'index.php?fc=module&module=ebanx&controller=success&hash=' . $hash);
             }
         }
         else
