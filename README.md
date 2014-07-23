@@ -25,6 +25,7 @@ git clone --recursive https://github.com/ebanx/ebanx-prestashop.git
 8. That's all!
 
 ## Changelog
+* 2.1.0: added installments for CCs, updated ebanx-php lib
 * 2.0.0: split payment methods via Direct API, removed EBANX Checkout
 * 1.0.2: updated EBANX library
 * 1.0.1: remove installments from checkout mode

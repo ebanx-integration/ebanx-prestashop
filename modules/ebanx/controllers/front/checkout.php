@@ -84,6 +84,17 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
               , 'card_due_date' => str_pad(Tools::getValue('ebanx_cc_exp_month'), 2, 0, STR_PAD_LEFT) . '/' . Tools::getValue('ebanx_cc_exp_year')
               , 'card_cvv'      => Tools::getValue('ebanx_cc_cvv')
             );
+
+            // If has installments, adjust total
+            if (intval(Tools::getValue('ebanx_installments')) > 1)
+            {
+              if (intval(Tools::getValue('ebanx_installments')) > 1 && Tools::getValue('ebanx_installments') < 12)
+              {
+                $interestRate = floatval(Configuration::get('EBANX_INTEREST_RATE'));
+                $params['payment']['instalments']  = intval(Tools::getValue('ebanx_installments'));
+                $params['payment']['amount_total'] = ($cart->getOrderTotal(true) * (100 + $interestRate)) / 100.0;
+              }
+            }
         }
 
         $response = \Ebanx\Ebanx::doRequest($params);

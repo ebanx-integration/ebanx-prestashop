@@ -71,15 +71,31 @@
     </p>
 
     <p class="required text">
-      <label for="ebanx_birth_date">Bandeira <sup>*</sup></label>
+      <label for="ebanx_payment_type_code">Bandeira <sup>*</sup></label>
       <select id="ebanx_payment_type_code" name="ebanx_payment_type_code" required>
         <option></option>
+        <option value="amex">American Express</option>
+        <option value="aura">Aura</option>
         <option value="diners">Diners</option>
+        <option value="discover">Discover</option>
+        <option value="elo">Elo</option>
         <option value="hipercard">Hipercard</option>
         <option value="mastercard">Mastercard</option>
         <option value="visa">Visa</option>
       </select>
     </p>
+
+    {if $enable_installments}
+    <p class="required text">
+      <label for="ebanx_installments">Parcelas <sup>*</sup></label>
+      <select id="ebanx_installments" name="ebanx_installments" required>
+        <option></option>
+        {for $i = 1 to intval($max_installments)}
+          <option value="{$i}">{$i}</option>
+        {/for}
+      </select>
+    </p>
+    {/if}
   </fieldset>
 
   <p class="cart_navigation">
