@@ -44,7 +44,7 @@ class Ebanx extends PaymentModule
     {
         $this->name     = 'ebanx';
         $this->tab      = 'payments_gateways';
-        $this->version  = '2.1.0';
+        $this->version  = '2.1.1';
         $this->author   = 'EBANX';
 
         $this->currencies = true;
@@ -53,7 +53,7 @@ class Ebanx extends PaymentModule
         parent::__construct();
 
         $this->displayName = $this->l('EBANX');
-        $this->description = $this->l('EBANX is the market leader in e-commerce payment solutions for International Merchants selling online to Brazil.');
+        $this->description = $this->l('EBANX is the market leader in e-cçommerce payment solutions for International Merchants selling online to Brazil.');
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
 
         if (!Configuration::get('EBANX'))
@@ -180,7 +180,6 @@ class Ebanx extends PaymentModule
     {
         Tools::addCSS($this->_path . 'assets/css/app.css', 'all');
         Tools::addJS($this->_path . 'assets/js/app.js');
-        return true;
     }
 
     /**

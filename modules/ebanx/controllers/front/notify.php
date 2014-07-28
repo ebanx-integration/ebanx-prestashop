@@ -31,8 +31,7 @@
  */
 
 require_once dirname(dirname(dirname(__FILE__))) . '/bootstrap.php';
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+
 /**
  * The notify action controller. It's called by the EBANX robot when the payment
  * is updated.
