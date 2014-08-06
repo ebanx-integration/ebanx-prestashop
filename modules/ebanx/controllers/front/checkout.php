@@ -71,7 +71,7 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
             , 'zipcode'       => $address->postcode
             , 'city'          => $address->city
             , 'country'       => 'br'
-            , 'phone_number'  => $address->phone
+            , 'phone_number'  => (strlen($address->phone) > 0) ? $address->phone : $address->phone_mobile
           )
         );
 
