@@ -44,7 +44,7 @@ class Ebanx extends PaymentModule
     {
         $this->name     = 'ebanx';
         $this->tab      = 'payments_gateways';
-        $this->version  = '2.2.1';
+        $this->version  = '2.2.2';
         $this->author   = 'EBANX';
 
         $this->currencies = true;
@@ -491,13 +491,24 @@ class Ebanx extends PaymentModule
             return;
         }
 
+        // Defines the base URL with/without HTTPS
+        $baseUrl = _PS_BASE_URL_ . __PS_BASE_URI__;
+
+        if (intval(Configuration::get('EBANX_TESTING')) == 0)
+        {
+            if (intval(Configuration::get('PS_SSL_ENABLED')) == 1 || intval(Configuration::get('EBANX_ENABLE_CREDITCARD')) == 1)
+            {
+                $baseUrl = str_replace('http', 'https', $baseUrl);
+            }
+        }
+
         $this->context->smarty->assign(
             array(
-                'action_url_boleto' => 'index.php?fc=module&module=ebanx&controller=payment&method=boleto'
+                'action_url_boleto' => $baseUrl . 'index.php?fc=module&module=ebanx&controller=payment&method=boleto'
               , 'image_boleto'      => __PS_BASE_URI__ . 'modules/ebanx/assets/img/boleto.png'
-              , 'action_url_cc'     => 'index.php?fc=module&module=ebanx&controller=payment&method=creditcard'
+              , 'action_url_cc'     => $baseUrl . 'index.php?fc=module&module=ebanx&controller=payment&method=creditcard'
               , 'image_cc'          => __PS_BASE_URI__ . 'modules/ebanx/assets/img/creditcard.png'
-              , 'action_url_tef'    => 'index.php?fc=module&module=ebanx&controller=payment&method=tef'
+              , 'action_url_tef'    => $baseUrl . 'index.php?fc=module&module=ebanx&controller=payment&method=tef'
               , 'image_tef'         => __PS_BASE_URI__ . 'modules/ebanx/assets/img/tef.png'
               , 'ebanx_boleto_enabled' => intval(Configuration::get('EBANX_ENABLE_BOLETO')) == 1
               , 'ebanx_cc_enabled'     => intval(Configuration::get('EBANX_ENABLE_CREDITCARD')) == 1

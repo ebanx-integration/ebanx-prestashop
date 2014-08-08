@@ -25,6 +25,7 @@ git clone --recursive https://github.com/ebanx/ebanx-prestashop.git
 8. That's all!
 
 ## Changelog
+* 2.2.2: fixed SSL redirections
 * 2.2.1: fixed mandatory phone field
 * 2.2.0: translated error messages
 * 2.1.1: fixed hookHeader printing "1" string

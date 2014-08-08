@@ -2,7 +2,7 @@
 <module>
   <name>ebanx</name>
   <displayName><![CDATA[EBANX]]></displayName>
-  <version><![CDATA[2.2.1]]></version>
+  <version><![CDATA[2.2.2]]></version>
   <description><![CDATA[EBANX is the market leader in e-commerce payment solutions for International Merchants selling online to Brazil.]]></description>
   <author><![CDATA[EBANX]]></author>
   <tab><![CDATA[payments_gateways]]></tab>
