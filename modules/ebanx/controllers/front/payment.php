@@ -35,6 +35,14 @@
  */
 class EbanxPaymentModuleFrontController extends ModuleFrontController
 {
+    public $ssl = true;
+
+    public function __construct()
+    {
+      $this->ssl = (intval(Configuration::get('PS_SSL_ENABLED')) == 1) && (intval(Configuration::get('EBANX_TESTING')) == 0);
+      parent::__construct();
+    }
+
     public function initContent()
     {
         $this->display_column_left = false;
