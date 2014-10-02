@@ -40,12 +40,17 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
 {
     public function initContent()
     {
+        $testEnv  = (intval(Configuration::get('EBANX_TESTING')) == 1);
+
         $cart     = $this->context->cart;
         $customer = new Customer($cart->id_customer);
         $currency = new Currency($cart->id_currency);
         $address  = new Address($cart->id_address_invoice);
         $state    = new State($address->id_state);
         $method   = Tools::getValue('ebanx_payment_method');
+
+        // Append timestamp for test purposes
+        $orderId  = $testEnv ? substr($cart->id . time(), 0, 20) : $cart->id;
 
         $total = floatval(number_format($cart->getOrderTotal(true, 3), 2, '.', ''));
 
@@ -60,7 +65,8 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
               'payment_type_code' => Tools::getValue('ebanx_payment_type_code')
             , 'amount_total'      => $cart->getOrderTotal(true)
             , 'currency_code'     => $currency->iso_code
-            , 'merchant_payment_code' => $cart->id
+            , 'merchant_payment_code' => $orderId
+            , 'order_number'  => $cart->id
             , 'name'          => $customer->firstname . ' ' . $customer->lastname
             , 'birth_date'    => Tools::getValue('ebanx_birth_date')
             , 'document'      => Tools::getValue('ebanx_document')
