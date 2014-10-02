@@ -44,7 +44,7 @@ class Ebanx extends PaymentModule
     {
         $this->name     = 'ebanx';
         $this->tab      = 'payments_gateways';
-        $this->version  = '2.2.2';
+        $this->version  = '2.3.0';
         $this->author   = 'EBANX';
 
         $this->currencies = true;
@@ -73,7 +73,8 @@ class Ebanx extends PaymentModule
          || !Configuration::deleteByName('EBANX_INTEGRATION_KEY')
          || !Configuration::deleteByName('EBANX_INSTALLMENTS_ACTIVE')
          || !Configuration::deleteByName('EBANX_INSTALLMENTS_NUMBER')
-         || !Configuration::deleteByName('EBANX_INTEREST_RATE')
+         || !Configuration::deleteByName('EBANX_INSTALLMENTS_MODE')
+         || !Configuration::deleteByName('EBANX_INSTALLMENTS_INTEREST')
          || !Configuration::deleteByName('EBANX_STATUS_OPEN')
          || !Configuration::deleteByName('EBANX_ENABLE_BOLETO')
          || !Configuration::deleteByName('EBANX_ENABLE_CREDITCARD')
@@ -123,8 +124,9 @@ class Ebanx extends PaymentModule
          || !Configuration::updateValue('EBANX_TESTING', true)
          || !Configuration::updateValue('EBANX_INTEGRATION_KEY', '')
          || !Configuration::updateValue('EBANX_INSTALLMENTS_ACTIVE', false)
-         || !Configuration::updateValue('EBANX_INSTALLMENTS_NUMBER', 6)
-         || !Configuration::updateValue('EBANX_INTEREST_RATE', 10.0)
+         || !Configuration::updateValue('EBANX_INSTALLMENTS_NUMBER', 1)
+         || !Configuration::updateValue('EBANX_INSTALLMENTS_MODE', 'simple')
+         || !Configuration::updateValue('EBANX_INSTALLMENTS_INTEREST', '0.00')
          || !Configuration::updateValue('EBANX_ENABLE_CREDITCARD', false)
          || !Configuration::updateValue('EBANX_ENABLE_BOLETO', true)
          || !Configuration::updateValue('EBANX_ENABLE_TEF', true))
@@ -262,7 +264,8 @@ class Ebanx extends PaymentModule
         $integrationKey     = Tools::getValue('EBANX_INTEGRATION_KEY');
         $installmentsActive = Tools::getValue('EBANX_INSTALLMENTS_ACTIVE');
         $installmentsNumber = Tools::getValue('EBANX_INSTALLMENTS_NUMBER');
-        $interestRate       = Tools::getValue('EBANX_INTEREST_RATE');
+        $interestRate       = Tools::getValue('EBANX_INSTALLMENTS_INTEREST');
+        $installmentsMode   = Tools::getValue('EBANX_INSTALLMENTS_MODE');
 
         if (!in_array(intval($testing), array(0, 1)))
         {
@@ -279,7 +282,7 @@ class Ebanx extends PaymentModule
             $errors[] = $this->l('Installments must be enabled or disabled.');
         }
 
-        if (!in_array(intval($installmentsNumber), range(1, 6)))
+        if (!in_array(intval($installmentsNumber), range(1, 12)))
         {
             $errors[] = $this->l('The maximum installments number must be between 1 and 6.');
         }
@@ -287,6 +290,11 @@ class Ebanx extends PaymentModule
         if (!is_numeric($interestRate))
         {
             $errors[] = $this->l('The interest rate must be a number.');
+        }
+
+        if (!in_array(intval($installmentsMode), array('simple', 'compound')))
+        {
+            $errors[] = $this->l('The interest calculation must be either simple or compound.');
         }
 
         if (count($errors))
@@ -307,6 +315,8 @@ class Ebanx extends PaymentModule
         Configuration::updateValue('EBANX_INTEGRATION_KEY', Tools::getValue('EBANX_INTEGRATION_KEY'));
         Configuration::updateValue('EBANX_INSTALLMENTS_ACTIVE', intval(Tools::getValue('EBANX_INSTALLMENTS_ACTIVE')));
         Configuration::updateValue('EBANX_INSTALLMENTS_NUMBER', intval(Tools::getValue('EBANX_INSTALLMENTS_NUMBER')));
+        Configuration::updateValue('EBANX_INSTALLMENTS_INTEREST', floatval(Tools::getValue('EBANX_INSTALLMENTS_INTEREST')));
+        Configuration::updateValue('EBANX_INSTALLMENTS_MODE', strval(Tools::getValue('EBANX_INSTALLMENTS_MODE')));
         Configuration::updateValue('EBANX_ENABLE_BOLETO', intval(Tools::getValue('EBANX_ENABLE_BOLETO')));
         Configuration::updateValue('EBANX_ENABLE_CREDITCARD', intval(Tools::getValue('EBANX_ENABLE_CREDITCARD')));
         Configuration::updateValue('EBANX_ENABLE_TEF', intval(Tools::getValue('EBANX_ENABLE_TEF')));
@@ -375,6 +385,12 @@ class Ebanx extends PaymentModule
                             array('label' => '4', 'value' => 4),
                             array('label' => '5', 'value' => 5),
                             array('label' => '6', 'value' => 6),
+                            array('label' => '7', 'value' => 7),
+                            array('label' => '8', 'value' => 8),
+                            array('label' => '9', 'value' => 9),
+                            array('label' => '10', 'value' => 10),
+                            array('label' => '11', 'value' => 11),
+                            array('label' => '12', 'value' => 12),
                         ),
                         'id'   => 'value',
                         'name' => 'label'
@@ -383,8 +399,22 @@ class Ebanx extends PaymentModule
                 array(
                     'type' => 'text',
                     'label' => $this->l('Installments interest rate (%)'),
-                    'name' => 'EBANX_INTEREST_RATE',
+                    'name' => 'EBANX_INSTALLMENTS_INTEREST',
                     'size' => 10,
+                    'required' => false
+                ),
+                array(
+                    'type' => 'select',
+                    'label' => $this->l('Installments interest calculation mode'),
+                    'name' => 'EBANX_INSTALLMENTS_MODE',
+                    'options' => array(
+                        'query' => array(
+                            array('label' => 'Compound', 'value' => 'simple'),
+                            array('label' => 'Simple', 'value' => 'compound')
+                        ),
+                        'id'   => 'value',
+                        'name' => 'label'
+                    ),
                     'required' => false
                 ),
                 array(
@@ -471,7 +501,8 @@ class Ebanx extends PaymentModule
         $helper->fields_value['EBANX_TESTING']             = Configuration::get('EBANX_TESTING');
         $helper->fields_value['EBANX_INSTALLMENTS_ACTIVE'] = Configuration::get('EBANX_INSTALLMENTS_ACTIVE');
         $helper->fields_value['EBANX_INSTALLMENTS_NUMBER'] = Configuration::get('EBANX_INSTALLMENTS_NUMBER');
-        $helper->fields_value['EBANX_INTEREST_RATE']       = Configuration::get('EBANX_INTEREST_RATE');
+        $helper->fields_value['EBANX_INSTALLMENTS_INTEREST'] = Configuration::get('EBANX_INSTALLMENTS_INTEREST');
+        $helper->fields_value['EBANX_INSTALLMENTS_MODE']   = Configuration::get('EBANX_INSTALLMENTS_MODE');
         $helper->fields_value['EBANX_ENABLE_BOLETO']       = Configuration::get('EBANX_ENABLE_BOLETO');
         $helper->fields_value['EBANX_ENABLE_CREDITCARD']   = Configuration::get('EBANX_ENABLE_CREDITCARD');
         $helper->fields_value['EBANX_ENABLE_TEF']          = Configuration::get('EBANX_ENABLE_TEF');
@@ -573,5 +604,32 @@ class Ebanx extends PaymentModule
              . 'WHERE hash = \'' . $hash . '\'';
 
         return Db::getInstance()->getRow($sql);
+    }
+
+    public static function calculateTotalWithInterest($interestMode, $interestRate, $orderTotal, $installments)
+    {
+        switch ($interestMode) {
+          case 'compound':
+            $total = self::calculateTotalCompoundInterest($interestRate, $orderTotal, $installments);
+            break;
+          case 'simple':
+            $total = self::calculateTotalSimpleInterest($interestRate, $orderTotal, $installments);
+            break;
+          default:
+            throw new Exception("Interest mode {$interestMode} is unsupported.");
+            break;
+        }
+
+        return $total;
+    }
+
+    protected static function calculateTotalSimpleInterest($interestRate, $orderTotal, $installments)
+    {
+        return (floatval($interestRate / 100) * floatval($orderTotal) * intval($installments)) + floatval($orderTotal);
+    }
+
+    protected static function calculateTotalCompoundInterest($interestRate, $orderTotal, $installments)
+    {
+        return $orderTotal * pow((1.0 + floatval($interestRate / 100)), $installments);
     }
 }

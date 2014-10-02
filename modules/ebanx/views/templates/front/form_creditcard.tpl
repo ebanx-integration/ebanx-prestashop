@@ -50,7 +50,7 @@
 
     <p class="required text">
       <label for="ebanx_cc_cvv">CVV <sup>*</sup></label>
-      <input type="text" id="ebanx_cc_cvv" name="ebanx_cc_cvv" value="" required>
+      <input type="text" id="ebanx_cc_cvv" name="ebanx_cc_cvv" value="" size="4" required>
     </p>
 
     <p class="required text">
@@ -90,8 +90,8 @@
       <label for="ebanx_installments">Parcelas <sup>*</sup></label>
       <select id="ebanx_installments" name="ebanx_installments" required>
         <option></option>
-        {for $i = 1 to intval($max_installments)}
-          <option value="{$i}">{$i}</option>
+        {for $i = 1 to $max_installments}
+          <option value="{$i}">{$i}x {money_format("%i", $installments_total[$i] / $i)}</option>
         {/for}
       </select>
     </p>

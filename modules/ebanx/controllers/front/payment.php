@@ -52,8 +52,6 @@ class EbanxPaymentModuleFrontController extends ModuleFrontController
 
         // Calculate the total and the total with interest
         $total    = $this->context->cart->getOrderTotal(true, Cart::BOTH);
-        $interest = floatval(Configuration::get('EBANX_INTEREST_RATE'));
-        $totalInstallments = ($total * (100 + $interest)) / 100.0;
 
         $maxInstallments = intval(Configuration::get('EBANX_INSTALLMENTS_NUMBER'));
 
@@ -72,10 +70,10 @@ class EbanxPaymentModuleFrontController extends ModuleFrontController
             break;
         }
 
-        // Enforce minimum installment value of R$20
-        if (($totalReal / 20) < $maxInstallments)
+        // Enforce minimum installment value of R$25
+        if (($totalReal / 35) < $maxInstallments)
         {
-          $maxInstallments = floor($totalReal / 20);
+          $maxInstallments = floor($totalReal / 30);
         }
 
         $currency = new Currency($this->context->cart->id_currency);
@@ -84,15 +82,32 @@ class EbanxPaymentModuleFrontController extends ModuleFrontController
             'action_url'          => _PS_BASE_URL_ . __PS_BASE_URI__ . 'index.php?fc=module&module=ebanx&controller=checkout'
           , 'total'               => $total
           , 'image'               => __PS_BASE_URI__ . 'modules/ebanx/assets/img/ebanx.png'
-          , 'total_installments'  => $totalInstallments
           , 'enable_installments' => (intval(Configuration::get('EBANX_INSTALLMENTS_ACTIVE')) == 1)
           , 'max_installments'    => $maxInstallments
           , 'currency_code'       => $this->context->currency->iso_code
           , 'request_error'       => Tools::getValue('ebanx_error')
+          , 'installments_total'  => $this->getInstallmentsTotals()
         ));
 
         // One template for each payment method
         $template = 'form_' . Tools::getValue('method') . '.tpl';
         $this->setTemplate($template);
+    }
+
+    public function getInstallmentsTotals()
+    {
+        $orderTotal      = $this->context->cart->getOrderTotal(true, Cart::BOTH);
+        $interestRate    = floatval(Configuration::get('EBANX_INSTALLMENTS_INTEREST'));
+        $maxInstallments = intval(Configuration::get('EBANX_INSTALLMENTS_NUMBER'));
+        $interestMode    = Configuration::get('EBANX_INSTALLMENTS_MODE');
+
+        $totals = array();
+        $totals[1] = $orderTotal;
+        for ($i = 2; $i <= $maxInstallments; $i++)
+        {
+          $totals[$i] = Ebanx::calculateTotalWithInterest($interestMode, $interestRate, $orderTotal, $i);
+        }
+
+        return $totals;
     }
 }

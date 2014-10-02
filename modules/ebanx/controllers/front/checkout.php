@@ -90,9 +90,13 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
             {
               if (intval(Tools::getValue('ebanx_installments')) > 1 && Tools::getValue('ebanx_installments') < 12)
               {
-                $interestRate = floatval(Configuration::get('EBANX_INTEREST_RATE'));
-                $params['payment']['instalments']  = intval(Tools::getValue('ebanx_installments'));
-                $params['payment']['amount_total'] = ($cart->getOrderTotal(true) * (100 + $interestRate)) / 100.0;
+                $interestRate = floatval(Configuration::get('EBANX_INSTALLMENTS_INTEREST'));
+                $interestMode = Configuration::get('EBANX_INSTALLMENTS_MODE');
+
+                $installments = intval(Tools::getValue('ebanx_installments'));
+
+                $params['payment']['instalments']  = $installments;
+                $params['payment']['amount_total'] = Ebanx::calculateTotalWithInterest($interestMode, $interestRate, $cart->getOrderTotal(true), $installments);
               }
             }
         }
