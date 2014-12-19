@@ -45,18 +45,8 @@ class EbanxReturnModuleFrontController extends ModuleFrontController
     $cartId = (int) Tools::getValue('merchant_payment_code', 0);
     $hash   = Tools::getValue('hash');
 
-    $response   = \Ebanx\Ebanx::doQuery(array('hash' => $hash));
-
-    $status = Ebanx::getOrderStatus($response->payment->status);
-
-    // Update the order status
-    if (!in_array($response->payment->status, array('PE', 'OP')))
-    {
-      $order = new Order(Order::getOrderByCartId($cartId));
-      $order->setCurrentState($status);
-    }
-
-    $redirectLink = 'index.php?controller=history&id_order' . $order->reference;
+    $response     = \Ebanx\Ebanx::doQuery(array('hash' => $hash));
+    $redirectLink = 'index.php?controller=history&id_order=' . $response->payment->order_number;
 
     Tools::redirect($redirectLink);
   }

@@ -38,6 +38,8 @@ require_once dirname(dirname(dirname(__FILE__))) . '/bootstrap.php';
  */
 class EbanxNotifyModuleFrontController extends ModuleFrontController
 {
+  protected $errorMessage = '';
+
   public function init()
   {
     parent::init();
@@ -54,7 +56,7 @@ class EbanxNotifyModuleFrontController extends ModuleFrontController
       }
       else
       {
-        echo 'NOK: ' . $hash . '<br>';
+        echo 'NOK: ' . $hash . ' ' . $this->errorMessage . '<br>';
       }
     }
 
@@ -75,11 +77,27 @@ class EbanxNotifyModuleFrontController extends ModuleFrontController
       return false;
     }
 
+    // Skip chargeback
+    if (isset($result->payment->chargeback))
+    {
+      $this->errorMessage = "payment was not updated due to chargeback.";
+      return false;
+    }
+
+    // Refunds - change to refunded status
+    if (isset($result->payment->refunds))
+    {
+      $this->errorMessage = "payment was not updated due to refund.";
+      return false;
+    }
+
     $status  = Ebanx::getOrderStatus($response->payment->status);
     $orderId = Ebanx::findOrderIdByHash($hash);
 
+    // No order found
     if (intval($orderId) == 0)
     {
+      $this->errorMessage = 'No order found';
       return false;
     }
 
@@ -90,6 +108,7 @@ class EbanxNotifyModuleFrontController extends ModuleFrontController
     }
     catch (Exception $e)
     {
+      $this->errorMessage = $e->getMessage();
       return false;
     }
 

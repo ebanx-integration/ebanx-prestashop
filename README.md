@@ -25,6 +25,7 @@ git clone --recursive https://github.com/ebanx/ebanx-prestashop.git
 8. That's all!
 
 ## Changelog
+* 2.3.2: handle refunds and chargebacks on notification
 * 2.3.1: added order number to payment request
 * 2.3.0: updated library, added installments
 * 2.2.2: fixed SSL redirections
