@@ -87,7 +87,7 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
             $params['payment']['creditcard'] = array(
                 'card_number'   => Tools::getValue('ebanx_cc_number')
               , 'card_name'     => Tools::getValue('ebanx_cc_name')
-              , 'card_due_date' => str_pad(Tools::getValue('ebanx_cc_exp_month'), 2, 0, STR_PAD_LEFT) . '/' . Tools::getValue('ebanx_cc_exp_year')
+              , 'card_due_date' => Tools::getValue('ebanx_cc_exp')
               , 'card_cvv'      => Tools::getValue('ebanx_cc_cvv')
             );
 
@@ -107,7 +107,17 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
             }
         }
 
-        $response = \Ebanx\Ebanx::doRequest($params);
+        try
+        {
+            $response = \Ebanx\Ebanx::doRequest($params);
+        }
+        catch (\Exception $e)
+        {
+            $errorMessage = $this->getEbanxErrorMessage($e->getMessage());
+
+            // Go back to the other screen
+            Tools::redirect($_SERVER['HTTP_REFERER'] . '&ebanx_error=' . urlencode($errorMessage));
+        }
 
         if ($response->status == 'SUCCESS')
         {

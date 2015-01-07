@@ -44,7 +44,7 @@ class Ebanx extends PaymentModule
     {
         $this->name     = 'ebanx';
         $this->tab      = 'payments_gateways';
-        $this->version  = '2.3.2';
+        $this->version  = '2.4.0';
         $this->author   = 'EBANX';
 
         $this->currencies = true;

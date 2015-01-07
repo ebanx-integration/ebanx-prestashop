@@ -1,26 +1,5 @@
-.ebanx-form {
-
-}
-
-.ebanx-form p {
-
-}
-
-.ebanx-form p label {
-  width: 135px;
-  padding: 0 15px 0 0;
-  display: inline-block;
-  font-size: 1.2em;
-  font-weight: bold;
-  color: #000;
-  text-align: right;
-}
-
-.ebanx-form p input,
-.ebanx-form p select {
-  font-size: 1.2em;
-  padding: 5px;
-  border: 1px solid #999;
+.ebanx-payment-form .form-group .form-control {
+  max-width: 271px;
 }
 
 .ebanx-error {
