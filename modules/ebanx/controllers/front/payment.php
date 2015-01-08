@@ -87,6 +87,7 @@ class EbanxPaymentModuleFrontController extends ModuleFrontController
           , 'currency_code'       => $this->context->currency->iso_code
           , 'request_error'       => Tools::getValue('ebanx_error')
           , 'installments_total'  => $this->getInstallmentsTotals()
+          , 'has_interest'        => intval(Configuration::get('EBANX_INSTALLMENTS_INTEREST')) > 0
         ));
 
         // One template for each payment method

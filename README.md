@@ -25,6 +25,7 @@ git clone --recursive https://github.com/ebanx/ebanx-prestashop.git
 8. That's all!
 
 ## Changelog
+* 2.4.1: fixed interest message
 * 2.4.0: PrestaShop 1.6 compatibility, reviewed forms
 * 2.3.2: handle refunds and chargebacks on notification
 * 2.3.1: added order number to payment request

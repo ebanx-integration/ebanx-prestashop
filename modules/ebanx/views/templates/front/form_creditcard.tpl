@@ -68,7 +68,11 @@
     </div>
 
     {if $enable_installments}
-    <p><strong>Atenção:</strong> o parcelamento pode incluir juros.</p>
+      {if $has_interest}
+        <p><strong>Atenção:</strong> o parcelamento pode incluir juros.</p>
+      {else}
+        <p><strong>Atenção:</strong> parcelamento sem juros!</p>
+      {/if}
     <div class="form-group">
       <label for="ebanx_installments">Parcelas <sup>*</sup></label>
       <select class="form-control" id="ebanx_installments" name="ebanx_installments" required>
