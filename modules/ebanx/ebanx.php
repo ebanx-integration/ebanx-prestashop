@@ -44,7 +44,7 @@ class Ebanx extends PaymentModule
     {
         $this->name     = 'ebanx';
         $this->tab      = 'payments_gateways';
-        $this->version  = '2.4.1';
+        $this->version  = '2.5.0';
         $this->author   = 'EBANX';
 
         $this->currencies = true;
@@ -533,6 +533,13 @@ class Ebanx extends PaymentModule
             }
         }
 
+
+        $cart     = $this->context->cart;
+        $customer = new Customer($cart->id_customer);
+        $currency = new Currency($cart->id_currency);
+        $address  = new Address($cart->id_address_invoice);
+        $country  = new Country($address->id_country);
+
         $this->context->smarty->assign(
             array(
                 'action_url_boleto' => $baseUrl . 'index.php?fc=module&module=ebanx&controller=payment&method=boleto'
@@ -544,6 +551,8 @@ class Ebanx extends PaymentModule
               , 'ebanx_boleto_enabled' => intval(Configuration::get('EBANX_ENABLE_BOLETO')) == 1
               , 'ebanx_cc_enabled'     => intval(Configuration::get('EBANX_ENABLE_CREDITCARD')) == 1
               , 'ebanx_tef_enabled'    => intval(Configuration::get('EBANX_ENABLE_TEF')) == 1
+              , 'country_code'         => $country->iso_code
+              , 'action_checkout'   => $baseUrl . 'index.php?fc=module&module=ebanx&controller=checkout'
             )
         );
 
