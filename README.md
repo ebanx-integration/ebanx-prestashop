@@ -16,7 +16,7 @@ git clone --recursive https://github.com/ebanx/ebanx-prestashop.git
 7. Go to the EBANX Merchant Area, then to **Integration > Merchant Options**.
   1. Change the _Status Change Notification URL_ to:
   ```
-  {YOUR_SITE}/index.php?fc=module&module=ebanx&controller=notify
+  {YOUR_SITE}/notify.php
   ```
   2. Change the _Response URL_ to:
   ```
@@ -25,6 +25,7 @@ git clone --recursive https://github.com/ebanx/ebanx-prestashop.git
 8. That's all!
 
 ## Changelog
+* 2.6.0: Created EBANX Express and EBANX Standard Checkout
 * 2.5.0: integrated Peru using EBANX Checkout
 * 2.4.1: fixed interest message
 * 2.4.0: PrestaShop 1.6 compatibility, reviewed forms
