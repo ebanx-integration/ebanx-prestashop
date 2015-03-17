@@ -30,10 +30,30 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-require_once dirname(__FILE__) . '/lib/src/autoload.php';
+require_once dirname(dirname(dirname(__FILE__))) . '/bootstrap.php';
 
-\Ebanx\Config::set(array(
-    'integrationKey' => Configuration::get('EBANX_INTEGRATION_KEY')
-  , 'testMode'       => (intval(Configuration::get('EBANX_TESTING')) == 1)
-  , 'directMode'     => false
-));
+/**
+ * The return action controller. Updates the order status after being redirected
+ * from EBANX.
+ */
+class EbanxExpressSuccessModuleFrontController extends ModuleFrontController
+{
+  public function initContent()
+  {
+    $this->display_column_left = false;
+    parent::initContent();
+
+    global $smarty;
+
+    $hash  = Tools::getValue('hash');
+    $ebanx = EbanxExpress::findEbanxOrderData($hash);
+
+    $smarty->assign(array(
+        'ebanx'    => $ebanx
+      , 'img_path' => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img/'
+      , 'url_orders' => _PS_BASE_URL_ . __PS_BASE_URI__ . 'index.php?controller=history'
+    ));
+
+    $this->setTemplate('success.tpl');
+  }
+}

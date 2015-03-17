@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <module>
-	<name>ebanx</name>
-	<displayName><![CDATA[EBANX Standard Checkout]]></displayName>
+	<name>ebanxexpress</name>
+	<displayName><![CDATA[EBANX Express]]></displayName>
 	<version><![CDATA[2.6.0]]></version>
 	<description><![CDATA[EBANX is the market leader in e-commerce payment solutions for International Merchants selling online to Brazil.]]></description>
 	<author><![CDATA[EBANX]]></author>

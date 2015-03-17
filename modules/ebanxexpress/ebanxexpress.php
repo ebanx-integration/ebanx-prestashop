@@ -38,11 +38,11 @@ if (!defined('_PS_VERSION_'))
 /**
  * The payment module class
  */
-class Ebanx extends PaymentModule
+class EbanxExpress extends PaymentModule
 {
     public function __construct()
     {
-        $this->name     = 'ebanx';
+        $this->name     = 'ebanxexpress';
         $this->tab      = 'payments_gateways';
         $this->version  = '2.6.0';
         $this->author   = 'EBANX';
@@ -52,11 +52,11 @@ class Ebanx extends PaymentModule
 
         parent::__construct();
 
-        $this->displayName = $this->l('EBANX Standard Checkout');
+        $this->displayName = $this->l('EBANX Express');
         $this->description = $this->l('EBANX is the market leader in e-commerce payment solutions for International Merchants selling online to Brazil.');
         $this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
 
-        if (!Configuration::get('EBANX'))
+        if (!Configuration::get('EBANX_EXPRESS'))
         {
           $this->warning = $this->l('No name provided');
         }
@@ -69,13 +69,13 @@ class Ebanx extends PaymentModule
     public function uninstall()
     {
         // Delete settings
-        if (!Configuration::deleteByName('EBANX_TESTING')
-         || !Configuration::deleteByName('EBANX_INTEGRATION_KEY')
-         // || !Configuration::deleteByName('EBANX_INSTALLMENTS_ACTIVE')
-         // || !Configuration::deleteByName('EBANX_INSTALLMENTS_NUMBER')
-         // || !Configuration::deleteByName('EBANX_INSTALLMENTS_MODE')
-         // || !Configuration::deleteByName('EBANX_INSTALLMENTS_INTEREST')
-         // || !Configuration::deleteByName('EBANX_STATUS_OPEN')
+        if (!Configuration::deleteByName('EBANX_EXPRESS_TESTING')
+         || !Configuration::deleteByName('EBANX_EXPRESS_INTEGRATION_KEY')
+         || !Configuration::deleteByName('EBANX_EXPRESS_INSTALLMENTS_ACTIVE')
+         || !Configuration::deleteByName('EBANX_EXPRESS_INSTALLMENTS_NUMBER')
+         || !Configuration::deleteByName('EBANX_EXPRESS_INSTALLMENTS_MODE')
+         || !Configuration::deleteByName('EBANX_EXPRESS_INSTALLMENTS_INTEREST')
+         || !Configuration::deleteByName('EBANX_EXPRESS_STATUS_OPEN')
          // || !Configuration::deleteByName('EBANX_ENABLE_BOLETO')
          // || !Configuration::deleteByName('EBANX_ENABLE_CREDITCARD')
          // || !Configuration::deleteByName('EBANX_ENABLE_TEF')
@@ -121,8 +121,12 @@ class Ebanx extends PaymentModule
          || !$this->registerHook('payment')
          || !$this->registerHook('paymentReturn')
          || !$this->registerHook('header')
-         || !Configuration::updateValue('EBANX_TESTING', true)
-         || !Configuration::updateValue('EBANX_INTEGRATION_KEY', ''))
+         || !Configuration::updateValue('EBANX_EXPRESS_TESTING', true)
+         || !Configuration::updateValue('EBANX_EXPRESS_INTEGRATION_KEY', '')
+         || !Configuration::updateValue('EBANX_EXPRESS_INSTALLMENTS_ACTIVE', false)
+         || !Configuration::updateValue('EBANX_EXPRESS_INSTALLMENTS_NUMBER', 1)
+         || !Configuration::updateValue('EBANX_EXPRESS_INSTALLMENTS_MODE', 'simple')
+         || !Configuration::updateValue('EBANX_EXPRESS_INSTALLMENTS_INTEREST', '0.00'))
         {
             return false;
         }
@@ -162,7 +166,7 @@ class Ebanx extends PaymentModule
             return false;
         }
 
-        Configuration::updateValue('EBANX_STATUS_OPEN', $statusId);
+        Configuration::updateValue('EBANX_EXPRESS_STATUS_OPEN', $statusId);
 
         return true;
     }
@@ -187,6 +191,7 @@ class Ebanx extends PaymentModule
         $engine = _MYSQL_ENGINE_;
 
         $sql = "
+            DROP TABLE IF EXISTS `{$prefix}ebanx_order`;
             CREATE TABLE IF NOT EXISTS `{$prefix}ebanx_order` (
             `id` int(11) unsigned NOT NULL auto_increment,
             `hash` varchar(255) NOT NULL,
@@ -218,7 +223,7 @@ class Ebanx extends PaymentModule
     {
         $output = null;
 
-        if (Tools::isSubmit('submitebanx'))
+        if (Tools::isSubmit('submitebanxexpress'))
         {
             // Returns error array on error
             $isValid = $this->_validateConfiguration();
@@ -252,8 +257,12 @@ class Ebanx extends PaymentModule
     {
         $errors = array();
 
-        $testing            = Tools::getValue('EBANX_TESTING');
-        $integrationKey     = Tools::getValue('EBANX_INTEGRATION_KEY');
+        $testing            = Tools::getValue('EBANX_EXPRESS_TESTING');
+        $integrationKey     = Tools::getValue('EBANX_EXPRESS_INTEGRATION_KEY');
+        $installmentsActive = Tools::getValue('EBANX_EXPRESS_INSTALLMENTS_ACTIVE');
+        $installmentsNumber = Tools::getValue('EBANX_EXPRESS_INSTALLMENTS_NUMBER');
+        $interestRate       = Tools::getValue('EBANX_EXPRESS_INSTALLMENTS_INTEREST');
+        $installmentsMode   = Tools::getValue('EBANX_EXPRESS_INSTALLMENTS_MODE');
 
         if (!in_array(intval($testing), array(0, 1)))
         {
@@ -263,6 +272,26 @@ class Ebanx extends PaymentModule
         if (strlen($integrationKey) != 100)
         {
             $errors[] = $this->l('The integration key is not valid.');
+        }
+
+        if (!in_array(intval($installmentsActive), array(0, 1)))
+        {
+            $errors[] = $this->l('Installments must be enabled or disabled.');
+        }
+
+        if (!in_array(intval($installmentsNumber), range(1, 12)))
+        {
+            $errors[] = $this->l('The maximum installments number must be between 1 and 12.');
+        }
+
+        if (!is_numeric($interestRate))
+        {
+            $errors[] = $this->l('The interest rate must be a number.');
+        }
+
+        if (!in_array(intval($installmentsMode), array('simple', 'compound')))
+        {
+            $errors[] = $this->l('The interest calculation must be either simple or compound.');
         }
 
         if (count($errors))
@@ -279,8 +308,12 @@ class Ebanx extends PaymentModule
      */
     protected function _updateConfiguration()
     {
-        Configuration::updateValue('EBANX_TESTING', intval(Tools::getValue('EBANX_TESTING')));
-        Configuration::updateValue('EBANX_INTEGRATION_KEY', Tools::getValue('EBANX_INTEGRATION_KEY'));
+        Configuration::updateValue('EBANX_EXPRESS_TESTING', intval(Tools::getValue('EBANX_EXPRESS_TESTING')));
+        Configuration::updateValue('EBANX_EXPRESS_INTEGRATION_KEY', Tools::getValue('EBANX_EXPRESS_INTEGRATION_KEY'));
+        Configuration::updateValue('EBANX_EXPRESS_INSTALLMENTS_ACTIVE', intval(Tools::getValue('EBANX_EXPRESS_INSTALLMENTS_ACTIVE')));
+        Configuration::updateValue('EBANX_EXPRESS_INSTALLMENTS_NUMBER', intval(Tools::getValue('EBANX_EXPRESS_INSTALLMENTS_NUMBER')));
+        Configuration::updateValue('EBANX_EXPRESS_INSTALLMENTS_INTEREST', floatval(Tools::getValue('EBANX_EXPRESS_INSTALLMENTS_INTEREST')));
+        Configuration::updateValue('EBANX_EXPRESS_INSTALLMENTS_MODE', strval(Tools::getValue('EBANX_EXPRESS_INSTALLMENTS_MODE')));
     }
 
     /**
@@ -301,14 +334,14 @@ class Ebanx extends PaymentModule
                 array(
                     'type' => 'text',
                     'label' => $this->l('Integration key'),
-                    'name' => 'EBANX_INTEGRATION_KEY',
+                    'name' => 'EBANX_EXPRESS_INTEGRATION_KEY',
                     'size' => 100,
                     'required' => true
                 ),
                 array(
                     'type' => 'select',
                     'label' => $this->l('Test mode'),
-                    'name' => 'EBANX_TESTING',
+                    'name' => 'EBANX_EXPRESS_TESTING',
                     'required' => true,
                     'options' => array(
                         'query' => array(
@@ -319,6 +352,65 @@ class Ebanx extends PaymentModule
                         'name' => 'label'
                     )
                 ),
+                array(
+                    'type' => 'select',
+                    'label' => $this->l('Installments'),
+                    'name' => 'EBANX_EXPRESS_INSTALLMENTS_ACTIVE',
+                    'required' => true,
+                    'options' => array(
+                        'query' => array(
+                            array('label' => 'Enabled',  'value' => 1),
+                            array('label' => 'Disabled', 'value' => 0)
+                        ),
+                        'id'   => 'value',
+                        'name' => 'label'
+                    )
+                ),
+                array(
+                    'type' => 'select',
+                    'label' => $this->l('Maximum installments number'),
+                    'name' => 'EBANX_EXPRESS_INSTALLMENTS_NUMBER',
+                    'required' => true,
+                    'options' => array(
+                        'query' => array(
+                            array('label' => '1', 'value' => 1),
+                            array('label' => '2', 'value' => 2),
+                            array('label' => '3', 'value' => 3),
+                            array('label' => '4', 'value' => 4),
+                            array('label' => '5', 'value' => 5),
+                            array('label' => '6', 'value' => 6),
+                            array('label' => '7', 'value' => 7),
+                            array('label' => '8', 'value' => 8),
+                            array('label' => '9', 'value' => 9),
+                            array('label' => '10', 'value' => 10),
+                            array('label' => '11', 'value' => 11),
+                            array('label' => '12', 'value' => 12),
+                        ),
+                        'id'   => 'value',
+                        'name' => 'label'
+                    )
+                ),
+                array(
+                    'type' => 'text',
+                    'label' => $this->l('Installments interest rate (%)'),
+                    'name' => 'EBANX_EXPRESS_INSTALLMENTS_INTEREST',
+                    'size' => 10,
+                    'required' => false
+                ),
+                array(
+                    'type' => 'select',
+                    'label' => $this->l('Installments interest calculation mode'),
+                    'name' => 'EBANX_EXPRESS_INSTALLMENTS_MODE',
+                    'options' => array(
+                        'query' => array(
+                            array('label' => 'Compound', 'value' => 'simple'),
+                            array('label' => 'Simple', 'value' => 'compound')
+                        ),
+                        'id'   => 'value',
+                        'name' => 'label'
+                    ),
+                    'required' => false
+                )
             ),
             'submit' => array(
                 'title' => $this->l('Save'),
@@ -357,8 +449,12 @@ class Ebanx extends PaymentModule
         );
 
         // Load current value
-        $helper->fields_value['EBANX_INTEGRATION_KEY']     = Configuration::get('EBANX_INTEGRATION_KEY');
-        $helper->fields_value['EBANX_TESTING']             = Configuration::get('EBANX_TESTING');
+        $helper->fields_value['EBANX_EXPRESS_INTEGRATION_KEY']     = Configuration::get('EBANX_EXPRESS_INTEGRATION_KEY');
+        $helper->fields_value['EBANX_EXPRESS_TESTING']             = Configuration::get('EBANX_EXPRESS_TESTING');
+        $helper->fields_value['EBANX_EXPRESS_INSTALLMENTS_ACTIVE'] = Configuration::get('EBANX_EXPRESS_INSTALLMENTS_ACTIVE');
+        $helper->fields_value['EBANX_EXPRESS_INSTALLMENTS_NUMBER'] = Configuration::get('EBANX_EXPRESS_INSTALLMENTS_NUMBER');
+        $helper->fields_value['EBANX_EXPRESS_INSTALLMENTS_INTEREST'] = Configuration::get('EBANX_EXPRESS_INSTALLMENTS_INTEREST');
+        $helper->fields_value['EBANX_EXPRESS_INSTALLMENTS_MODE']   = Configuration::get('EBANX_EXPRESS_INSTALLMENTS_MODE');
 
         return $helper->generateForm($fields_form);
     }
@@ -378,12 +474,12 @@ class Ebanx extends PaymentModule
         // Defines the base URL with/without HTTPS
         $baseUrl = _PS_BASE_URL_ . __PS_BASE_URI__;
 
-        if (intval(Configuration::get('EBANX_TESTING')) == 0)
+        if (intval(Configuration::get('EBANX_EXPRESS_TESTING')) == 0)
         {
             if (intval(Configuration::get('PS_SSL_ENABLED')) == 1)
             {
                 $baseUrl = str_replace('http', 'https', $baseUrl);
-            }
+            } 
         }
 
 
@@ -395,8 +491,11 @@ class Ebanx extends PaymentModule
 
         $this->context->smarty->assign(
             array(
-                'country_code'         => $country->iso_code
-              , 'action_checkout'   => $baseUrl . 'index.php?fc=module&module=ebanx&controller=checkout'
+                'image_boleto'      => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img/boleto.png'
+              , 'action_url_cc'     => $baseUrl . 'index.php?fc=module&module=ebanxexpress&controller=payment&method=creditcard'
+              , 'image_cc'          => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img/creditcard.png'
+              , 'country_code'         => $country->iso_code
+              , 'action_checkout'   => $baseUrl . 'index.php?fc=module&module=ebanxexpress&controller=checkout'
             )
         );
 
@@ -422,8 +521,8 @@ class Ebanx extends PaymentModule
     {
         $statuses = array(
             'CA' => 6
-          , 'OP' => Configuration::get('EBANX_STATUS_OPEN')
-          , 'PE' => Configuration::get('EBANX_STATUS_OPEN')
+          , 'OP' => Configuration::get('EBANX_EXPRESS_STATUS_OPEN')
+          , 'PE' => Configuration::get('EBANX_EXPRESS_STATUS_OPEN')
           , 'CO' => 2
         );
 

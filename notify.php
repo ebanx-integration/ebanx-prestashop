@@ -1,5 +1,8 @@
 <?php
 
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 /**
  * Copyright (c) 2013, EBANX Tecnologia da Informação Ltda.
  *  All rights reserved.
@@ -30,10 +33,51 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-require_once dirname(__FILE__) . '/lib/src/autoload.php';
 
-\Ebanx\Config::set(array(
-    'integrationKey' => Configuration::get('EBANX_INTEGRATION_KEY')
-  , 'testMode'       => (intval(Configuration::get('EBANX_TESTING')) == 1)
-  , 'directMode'     => false
-));
+require 'config/config.inc.php';
+require 'config/autoload.php';
+require_once 'modules/ebanx/bootstrap.php';
+require 'modules/ebanx/ebanx.php';
+
+/**
+ * The notify action controller. It's called by the EBANX robot when the payment
+ * is updated.
+ */
+
+$hashes = explode(',', $_REQUEST['hash_codes']);
+$notification_type = $_REQUEST['notification_type'];
+
+foreach ($hashes as $hash)
+{
+    $response = \Ebanx\Ebanx::doQuery(array('hash' => $hash));
+
+    if ($response->status == 'ERROR')
+    {
+        echo "Error contacting EBANX";
+    }
+
+    elseif ($notification_type == 'chargeback')
+    {
+        echo "payment was not updated due to chargeback.";
+    }
+
+    elseif ($notification_type == 'refund')
+    {
+        echo "payment was not updated due to refund.";
+    }
+
+    else
+    {
+        $type = $response->payment->payment_type_code;
+
+        $status  = Ebanx::getOrderStatus($response->payment->status);
+
+        $orderId = Ebanx::findOrderIdByHash($hash);
+                
+        $order = new Order($orderId);
+        
+        $order->setCurrentState($status);
+
+        echo 'OK: ' . $hash . ' <br>';
+    }
+}

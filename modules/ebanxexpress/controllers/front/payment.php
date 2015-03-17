@@ -33,13 +33,13 @@
 /**
  * The payment controller. It builds the payment form.
  */
-class EbanxPaymentModuleFrontController extends ModuleFrontController
+class EbanxExpressPaymentModuleFrontController extends ModuleFrontController
 {
     public $ssl = true;
 
     public function __construct()
     {
-      $this->ssl = (intval(Configuration::get('PS_SSL_ENABLED')) == 1) && (intval(Configuration::get('EBANX_TESTING')) == 0);
+      $this->ssl = (intval(Configuration::get('PS_SSL_ENABLED')) == 1) && (intval(Configuration::get('EBANX_EXPRESS_TESTING')) == 0);
       parent::__construct();
     }
 
@@ -49,6 +49,11 @@ class EbanxPaymentModuleFrontController extends ModuleFrontController
         parent::initContent();
 
         global $smarty;
+
+        // Calculate the total and the total with interest
+        $total    = $this->context->cart->getOrderTotal(true, Cart::BOTH);
+
+        $maxInstallments = intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_NUMBER'));
 
         // Convert the total to BRL (approximation)
         switch (strtoupper(($this->context->currency->iso_code)))
@@ -65,18 +70,45 @@ class EbanxPaymentModuleFrontController extends ModuleFrontController
             break;
         }
 
+        // Enforce minimum installment value of R$25
+        if (($totalReal / 35) < $maxInstallments)
+        {
+          $maxInstallments = floor($totalReal / 30);
+        }
+
         $currency = new Currency($this->context->cart->id_currency);
 
         $smarty->assign(array(
-            'action_url'          => _PS_BASE_URL_ . __PS_BASE_URI__ . 'index.php?fc=module&module=ebanx&controller=checkout'
+            'action_url'          => _PS_BASE_URL_ . __PS_BASE_URI__ . 'index.php?fc=module&module=ebanxexpress&controller=direct'
           , 'total'               => $total
-          , 'image'               => __PS_BASE_URI__ . 'modules/ebanx/assets/img/ebanx.png'
+          , 'image'               => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img/ebanx.png'
+          , 'enable_installments' => (intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_ACTIVE')) == 1)
+          , 'max_installments'    => $maxInstallments
           , 'currency_code'       => $this->context->currency->iso_code
           , 'request_error'       => Tools::getValue('ebanx_error')
+          , 'installments_total'  => $this->getInstallmentsTotals()
+          , 'has_interest'        => intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_INTEREST')) > 0
         ));
 
         // One template for each payment method
-        $template = 'form.tpl';
+        $template = 'form_' . Tools::getValue('method') . '.tpl';
         $this->setTemplate($template);
+    }
+
+    public function getInstallmentsTotals()
+    {
+        $orderTotal      = $this->context->cart->getOrderTotal(true, Cart::BOTH);
+        $interestRate    = floatval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_INTEREST'));
+        $maxInstallments = intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_NUMBER'));
+        $interestMode    = Configuration::get('EBANX_EXPRESS_INSTALLMENTS_MODE');
+
+        $totals = array();
+        $totals[1] = $orderTotal;
+        for ($i = 2; $i <= $maxInstallments; $i++)
+        {
+          $totals[$i] = EbanxExpress::calculateTotalWithInterest($interestMode, $interestRate, $orderTotal, $i);
+        }
+
+        return $totals;
     }
 }
