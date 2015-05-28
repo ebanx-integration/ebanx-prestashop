@@ -53,7 +53,7 @@ class EbanxExpressPaymentModuleFrontController extends ModuleFrontController
         // Calculate the total and the total with interest
         $total    = $this->context->cart->getOrderTotal(true, Cart::BOTH);
 
-        $maxInstallments = intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_NUMBER'));
+        $maxInstallments = intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_NUM'));
 
         // Convert the total to BRL (approximation)
         switch (strtoupper(($this->context->currency->iso_code)))
@@ -82,12 +82,12 @@ class EbanxExpressPaymentModuleFrontController extends ModuleFrontController
             'action_url'          => _PS_BASE_URL_ . __PS_BASE_URI__ . 'index.php?fc=module&module=ebanxexpress&controller=direct'
           , 'total'               => $total
           , 'image'               => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img/ebanx.png'
-          , 'enable_installments' => (intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_ACTIVE')) == 1)
+          , 'enable_installments' => (intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_ACT')) == 1)
           , 'max_installments'    => $maxInstallments
           , 'currency_code'       => $this->context->currency->iso_code
           , 'request_error'       => Tools::getValue('ebanx_error')
           , 'installments_total'  => $this->getInstallmentsTotals()
-          , 'has_interest'        => intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_INTEREST')) > 0
+          , 'has_interest'        => intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_INT')) > 0
         ));
 
         // One template for each payment method
@@ -98,9 +98,9 @@ class EbanxExpressPaymentModuleFrontController extends ModuleFrontController
     public function getInstallmentsTotals()
     {
         $orderTotal      = $this->context->cart->getOrderTotal(true, Cart::BOTH);
-        $interestRate    = floatval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_INTEREST'));
-        $maxInstallments = intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_NUMBER'));
-        $interestMode    = Configuration::get('EBANX_EXPRESS_INSTALLMENTS_MODE');
+        $interestRate    = floatval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_INT'));
+        $maxInstallments = intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_NUM'));
+        $interestMode    = Configuration::get('EBANX_EXPRESS_INSTALLMENTS_MOD');
 
         $totals = array();
         $totals[1] = $orderTotal;

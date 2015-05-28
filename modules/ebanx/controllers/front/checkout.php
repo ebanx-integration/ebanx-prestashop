@@ -40,6 +40,7 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
 {
     public function initContent()
     {
+        global $smarty;
         $testEnv  = (intval(Configuration::get('EBANX_TESTING')) == 1);
 
         $cart     = $this->context->cart;
@@ -58,6 +59,7 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
         // Fix missing street number
         $streetNumber = preg_replace('/\D/', '', $address->address1);
         $streetNumber = ($streetNumber > 0) ? $streetNumber : '1';
+        $baseUrl = _PS_BASE_URL_ . __PS_BASE_URI__;
 
         $params = array(
               'payment_type_code' => '_all'
@@ -85,15 +87,15 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
         {
             $errorMessage = $this->getEbanxErrorMessage($e->getMessage());
 
+            $errorRedirect = $baseUrl . 'index.php?fc=module&module=ebanx&controller=error&error=' . $errorMessage;
+
             // Go back to the other screen
-            Tools::redirect($_SERVER['HTTP_REFERER'] . '&ebanx_error=' . urlencode($errorMessage));
+            Tools::redirect($errorRedirect);
         }
 
         if ($response->status == 'SUCCESS')
-        {
-            $baseUrl = _PS_BASE_URL_ . __PS_BASE_URI__;
-
-            // Create a new order via validateOrder()
+        {            
+            // Create a new order via validateOrder() http://localhost/new_presta15/index.php?fc=module&module=ebanx&controller=payment
             $ebanx = new Ebanx();
             $ebanx->validateOrder($cart->id, Configuration::get('EBANX_STATUS_OPEN'), $total, $ebanx->displayName);
 
@@ -107,9 +109,10 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
         else
         {
             $errorMessage = $this->getEbanxErrorMessage($response->status_code);
+            $errorRedirect = $baseUrl . 'index.php?fc=module&module=ebanx&controller=error&error=' . $errorMessage;
 
             // Go back to the other screen
-            Tools::redirect($_SERVER['HTTP_REFERER'] . '&ebanx_error=' . urlencode($errorMessage));
+            Tools::redirect($errorRedirect);
         }
     }
 

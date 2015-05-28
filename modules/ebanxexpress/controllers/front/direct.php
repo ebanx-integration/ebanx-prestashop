@@ -97,8 +97,8 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
             {
               if (intval(Tools::getValue('ebanx_installments')) > 1 && Tools::getValue('ebanx_installments') < 12)
               {
-                $interestRate = floatval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_INTEREST'));
-                $interestMode = Configuration::get('EBANX_EXPRESS_INSTALLMENTS_MODE');
+                $interestRate = floatval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_INT'));
+                $interestMode = Configuration::get('EBANX_EXPRESS_INSTALLMENTS_MOD');
 
                 $installments = intval(Tools::getValue('ebanx_installments'));
 

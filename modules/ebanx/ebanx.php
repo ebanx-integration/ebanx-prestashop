@@ -71,31 +71,10 @@ class Ebanx extends PaymentModule
         // Delete settings
         if (!Configuration::deleteByName('EBANX_TESTING')
          || !Configuration::deleteByName('EBANX_INTEGRATION_KEY')
-         // || !Configuration::deleteByName('EBANX_INSTALLMENTS_ACTIVE')
-         // || !Configuration::deleteByName('EBANX_INSTALLMENTS_NUMBER')
-         // || !Configuration::deleteByName('EBANX_INSTALLMENTS_MODE')
-         // || !Configuration::deleteByName('EBANX_INSTALLMENTS_INTEREST')
-         // || !Configuration::deleteByName('EBANX_STATUS_OPEN')
-         // || !Configuration::deleteByName('EBANX_ENABLE_BOLETO')
-         // || !Configuration::deleteByName('EBANX_ENABLE_CREDITCARD')
-         // || !Configuration::deleteByName('EBANX_ENABLE_TEF')
          || !parent::uninstall())
         {
                 return false;
         }
-
-        // Delete custom order status
-        // if (!Db::getInstance()->delete('order_state', "module_name = 'ebanx'"))
-        // {
-        //     return false;
-        // }
-
-        // Delete custom order status translations
-        // if (!Db::getInstance()->delete('order_state_lang', "name LIKE '%EBANX%'"))
-        // {
-        //     return false;
-        // }
-
 
         return true;
     }

@@ -30,51 +30,36 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-
-require 'config/config.inc.php';
-require 'config/autoload.php';
-require_once 'modules/ebanx/bootstrap.php';
-require 'modules/ebanx/ebanx.php';
-
 /**
- * The notify action controller. It's called by the EBANX robot when the payment
- * is updated.
+ * The payment controller. It builds the payment form.
  */
-
-$hashes = explode(',', $_REQUEST['hash_codes']);
-$notification_type = $_REQUEST['notification_type'];
-
-foreach ($hashes as $hash)
+class EbanxErrorModuleFrontController extends ModuleFrontController
 {
-    $response = \Ebanx\Ebanx::doQuery(array('hash' => $hash));
+    public $ssl = true;
 
-    if ($response->status == 'ERROR')
+    public function __construct()
     {
-        echo "Error contacting EBANX";
+      $this->ssl = (intval(Configuration::get('PS_SSL_ENABLED')) == 1) && (intval(Configuration::get('EBANX_TESTING')) == 0);
+      parent::__construct();
     }
 
-    elseif ($notification_type == 'chargeback')
+    public function initContent()
     {
-        echo "payment was not updated due to chargeback.";
-    }
+        $this->display_column_left = false;
+        parent::initContent();
 
-    elseif ($notification_type == 'refund')
-    {
-        echo "payment was not updated due to refund.";
-    }
+        global $smarty;
 
-    else
-    {
-        $type = $response->payment->payment_type_code;
+        $ebanx_error = $_GET['error'];
 
-        $status  = Ebanx::getOrderStatus($response->payment->status);
+        $smarty->assign(
+            array(
+                'error'         => $ebanx_error
+            )
+        );
 
-        $orderId = Ebanx::findOrderIdByHash($hash);
-                
-        $order = new Order($orderId);
-        
-        $order->setCurrentState($status);
-
-        echo 'OK: ' . $hash . ' <br>';
+        // One template for each payment method
+        $template = 'ebanx_error.tpl';
+        $this->setTemplate($template);
     }
 }

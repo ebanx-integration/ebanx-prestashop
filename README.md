@@ -25,6 +25,7 @@ git clone --recursive https://github.com/ebanx/ebanx-prestashop.git
 8. That's all!
 
 ## Changelog
+* 2.6.1: Bug fixes
 * 2.6.0: Created EBANX Express and EBANX Standard Checkout
 * 2.5.0: integrated Peru using EBANX Checkout
 * 2.4.1: fixed interest message
