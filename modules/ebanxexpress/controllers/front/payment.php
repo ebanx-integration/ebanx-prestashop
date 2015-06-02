@@ -50,10 +50,13 @@ class EbanxExpressPaymentModuleFrontController extends ModuleFrontController
 
         global $smarty;
 
+
+
         // Calculate the total and the total with interest
         $total    = $this->context->cart->getOrderTotal(true, Cart::BOTH);
 
         $maxInstallments = intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_NUM'));
+
 
         // Convert the total to BRL (approximation)
         switch (strtoupper(($this->context->currency->iso_code)))
@@ -76,6 +79,7 @@ class EbanxExpressPaymentModuleFrontController extends ModuleFrontController
           $maxInstallments = floor($totalReal / 30);
         }
 
+
         $currency = new Currency($this->context->cart->id_currency);
 
         $smarty->assign(array(
@@ -89,6 +93,8 @@ class EbanxExpressPaymentModuleFrontController extends ModuleFrontController
           , 'installments_total'  => $this->getInstallmentsTotals()
           , 'has_interest'        => intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_INT')) > 0
         ));
+
+
 
         // One template for each payment method
         $template = 'form_' . Tools::getValue('method') . '.tpl';

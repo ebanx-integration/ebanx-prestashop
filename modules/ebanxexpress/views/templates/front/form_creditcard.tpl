@@ -67,7 +67,7 @@
       </select>
     </div>
 
-    {if $enable_installments}
+    {if $enable_installments && $max_installments > 1}
       {if $has_interest}
         <p><strong>Atenção:</strong> o parcelamento pode incluir juros.</p>
       {else}
