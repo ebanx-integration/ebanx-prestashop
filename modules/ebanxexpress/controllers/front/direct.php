@@ -116,7 +116,7 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
             $errorMessage = $this->getEbanxErrorMessage($e->getMessage());
 
             // Go back to the other screen
-            Tools::redirect($_SERVER['HTTP_REFERER'] . '&ebanx_error=' . urlencode($errorMessage));
+            Tools::redirect($baseUrl . 'index.php?fc=module&module=ebanxexpress&controller=payment&method=creditcard' . '&ebanx_error=' . urlencode($errorMessage));
         }
 
         if ($response->status == 'SUCCESS')
