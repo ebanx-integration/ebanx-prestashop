@@ -106,7 +106,7 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
                 $params['payment']['amount_total'] = EbanxExpress::calculateTotalWithInterest($interestMode, $interestRate, $cart->getOrderTotal(true), $installments);
               }
             }
-            
+
         try
         {
             $response = \Ebanx\Ebanx::doRequest($params);
@@ -141,7 +141,7 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
             $errorMessage = $this->getEbanxErrorMessage($response->status_code);
 
             // Go back to the other screen
-            Tools::redirect($_SERVER['HTTP_REFERER'] . '&ebanx_error=' . urlencode($errorMessage));
+            Tools::redirect($baseUrl . 'index.php?fc=module&module=ebanxexpress&controller=payment&method=creditcard' . '&ebanx_error=' . urlencode($errorMessage));
         }
     }
 
