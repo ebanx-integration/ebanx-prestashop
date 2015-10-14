@@ -111,7 +111,6 @@ class EbanxExpressPaymentModuleFrontController extends ModuleFrontController
 
         $ebanx = new EbanxExpress();
         
-
         $totals = array();
         $totals[1] = $orderTotal;
         for ($i = 2; $i <= $maxInstallments; $i++)

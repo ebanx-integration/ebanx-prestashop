@@ -30,9 +30,6 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 if (!defined('_PS_VERSION_'))
 {
     exit();
