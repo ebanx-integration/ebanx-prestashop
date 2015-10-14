@@ -68,21 +68,17 @@
     </div>
 
     {if $enable_installments && $max_installments > 1}
-      {if $has_interest}
-        <p><strong>Atenção:</strong> o parcelamento pode incluir juros.</p>
-      {else}
-        <p><strong>Atenção:</strong> parcelamento sem juros!</p>
-      {/if}
-    <div class="form-group">
-      <label for="ebanx_installments">Parcelas <sup>*</sup></label>
-      <select class="form-control" id="ebanx_installments" name="ebanx_installments" required>
-        <option></option> 
-        {for $i = 1 to $max_installments}
-          {*<option value="{$i}">{$i}x {$installments_total[$i] / $i}</option>*}
-          <option value="{$i}">{$i}x {displayPrice price =($installments_total[$i] / $i)}</option>
-        {/for}
-      </select>
-    </div>
+      <p><strong>Atenção:</strong> o parcelamento pode incluir juros.</p>
+      <div class="form-group">
+        <label for="ebanx_installments">Parcelas <sup>*</sup></label>
+        <select class="form-control" id="ebanx_installments" name="ebanx_installments" required>
+          <option></option> 
+          {for $i = 1 to $max_installments}
+            {*<option value="{$i}">{$i}x {$installments_total[$i] / $i}</option>*}
+            <option value="{$i}">{$i}x {displayPrice price =($installments_total[$i] / $i)}</option>
+          {/for}
+        </select>
+      </div>
     {/if}
 
     <p class="submit2">
