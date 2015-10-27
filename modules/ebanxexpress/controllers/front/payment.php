@@ -108,10 +108,15 @@ class EbanxExpressPaymentModuleFrontController extends ModuleFrontController
         $orderTotal      = $this->context->cart->getOrderTotal(true, Cart::BOTH);
        
         $maxInstallments = intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_NUM'));
+<<<<<<< HEAD
 
         $ebanx = new EbanxExpress();
         
+=======
+>>>>>>> fd645bb1d4a54abb7a3b230da46244efb8e75aef
 
+        $ebanx = new EbanxExpress();
+        
         $totals = array();
         //$totals[0] = $orderTotal;
         for ($i = 0; $i <= $maxInstallments; $i++)

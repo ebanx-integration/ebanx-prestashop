@@ -564,6 +564,12 @@ class EbanxExpress extends PaymentModule
     public function calculateTotalWithInterest($orderTotal, $installments)
       {
         switch ($installments) {
+<<<<<<< HEAD
+=======
+          case '1':
+            $interest_rate = 1;
+            break;
+>>>>>>> fd645bb1d4a54abb7a3b230da46244efb8e75aef
           case '2':
             $interest_rate = 2.30;
             break;
@@ -598,11 +604,19 @@ class EbanxExpress extends PaymentModule
             $interest_rate = 12.77;
             break;
           default:
+<<<<<<< HEAD
             $interest_rate = 0;
             break;
         }
 
      $total = (floatval($interest_rate / 100) * floatval($orderTotal) + floatval($orderTotal));
+=======
+            # code...
+            break;
+        }
+
+     $total = (($interest_rate / 100) * ($orderTotal) + ($orderTotal));
+>>>>>>> fd645bb1d4a54abb7a3b230da46244efb8e75aef
   
     //return number_format($total, 2, ",", " ");
      return $total;

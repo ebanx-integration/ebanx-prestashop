@@ -3,6 +3,11 @@
 This plugin allows you to integrate your PrestaShop store with the EBANX payment gateway.
 It includes support to installments and custom interest rates.
 
+# Using custom fees in installments
+1. You can use custom fees in installments modifying the code of the file modules/ebanxexpress/ebanxexpress.php
+
+2. Look for method calculateTotalWithInterest() in line 561, you can change the fees for each installment directly there.
+
 ## Installation
 1. Clone the git repo to your PrestaShop root folder
 ```
