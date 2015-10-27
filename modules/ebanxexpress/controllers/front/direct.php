@@ -91,22 +91,20 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
               , 'card_due_date' => Tools::getValue('ebanx_cc_exp')
               , 'card_cvv'      => Tools::getValue('ebanx_cc_cvv')
             );
-
+            
             // If has installments, adjust total
             if (intval(Tools::getValue('ebanx_installments')) > 1)
             {
               if (intval(Tools::getValue('ebanx_installments')) > 1 && Tools::getValue('ebanx_installments') < 12)
               {
-                $interestRate = floatval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_INT'));
-                $interestMode = Configuration::get('EBANX_EXPRESS_INSTALLMENTS_MOD');
-
+                
                 $installments = intval(Tools::getValue('ebanx_installments'));
 
                 $params['payment']['instalments']  = $installments;
-                $params['payment']['amount_total'] = EbanxExpress::calculateTotalWithInterest($interestMode, $interestRate, $cart->getOrderTotal(true), $installments);
+                $params['payment']['amount_total'] = EbanxExpress::calculateTotalWithInterest($cart->getOrderTotal(true), $installments);
               }
             }
-
+            
         try
         {
             $response = \Ebanx\Ebanx::doRequest($params);
@@ -116,7 +114,7 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
             $errorMessage = $this->getEbanxErrorMessage($e->getMessage());
 
             // Go back to the other screen
-            Tools::redirect($baseUrl . 'index.php?fc=module&module=ebanxexpress&controller=payment&method=creditcard' . '&ebanx_error=' . urlencode($errorMessage));
+            Tools::redirect($_SERVER['HTTP_REFERER'] . '&ebanx_error=' . urlencode($errorMessage));
         }
 
         if ($response->status == 'SUCCESS')

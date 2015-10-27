@@ -37,6 +37,8 @@ class EbanxExpressPaymentModuleFrontController extends ModuleFrontController
 {
     public $ssl = true;
 
+    
+
     public function __construct()
     {
       $this->ssl = (intval(Configuration::get('PS_SSL_ENABLED')) == 1) && (intval(Configuration::get('EBANX_EXPRESS_TESTING')) == 0);
@@ -104,17 +106,21 @@ class EbanxExpressPaymentModuleFrontController extends ModuleFrontController
     public function getInstallmentsTotals()
     {
         $orderTotal      = $this->context->cart->getOrderTotal(true, Cart::BOTH);
-        $interestRate    = floatval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_INT'));
+       
         $maxInstallments = intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_NUM'));
-        $interestMode    = Configuration::get('EBANX_EXPRESS_INSTALLMENTS_MOD');
+
+        $ebanx = new EbanxExpress();
+        
 
         $totals = array();
-        $totals[1] = $orderTotal;
-        for ($i = 2; $i <= $maxInstallments; $i++)
+        //$totals[0] = $orderTotal;
+        for ($i = 0; $i <= $maxInstallments; $i++)
         {
-          $totals[$i] = EbanxExpress::calculateTotalWithInterest($interestMode, $interestRate, $orderTotal, $i);
+          $totals[$i] = $ebanx->calculateTotalWithInterest($orderTotal, $i);
         }
 
         return $totals;
     }
+
+    
 }
