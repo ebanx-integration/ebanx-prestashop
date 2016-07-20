@@ -390,27 +390,6 @@ class EbanxExpress extends PaymentModule
                         'name' => 'label'
                     )
                 ),
-                array(
-                    'type' => 'text',
-                    'label' => $this->l('Installments interest rate (%)'),
-                    'name' => 'EBANX_EXPRESS_INSTALLMENTS_INT',
-                    'size' => 10,
-                    'required' => false
-                ),
-                array(
-                    'type' => 'select',
-                    'label' => $this->l('Installments interest calculation mode'),
-                    'name' => 'EBANX_EXPRESS_INSTALLMENTS_MOD',
-                    'options' => array(
-                        'query' => array(
-                            array('label' => 'Compound', 'value' => 'simple'),
-                            array('label' => 'Simple', 'value' => 'compound')
-                        ),
-                        'id'   => 'value',
-                        'name' => 'label'
-                    ),
-                    'required' => false
-                )
             ),
             'submit' => array(
                 'title' => $this->l('Save'),
@@ -558,30 +537,48 @@ class EbanxExpress extends PaymentModule
         return Db::getInstance()->getRow($sql);
     }
 
-    public static function calculateTotalWithInterest($interestMode, $interestRate, $orderTotal, $installments)
+    public static function calculateTotalWithInterest($orderTotal, $installments)
     {
-        switch ($interestMode) {
-          case 'compound':
-            $total = self::calculateTotalCompoundInterest($interestRate, $orderTotal, $installments);
+        switch ($installments) {
+          case '2':
+            $interest_rate = 2.30;
             break;
-          case 'simple':
-            $total = self::calculateTotalSimpleInterest($interestRate, $orderTotal, $installments);
+          case '3':
+            $interest_rate = 3.40;
+            break;
+          case '4':
+            $interest_rate = 4.50;
+            break;
+          case '5':
+            $interest_rate = 5.60;
+            break;
+          case '6':
+            $interest_rate = 6.70;
+            break;
+          case '7':
+            $interest_rate = 7.80;
+            break;
+          case '8':
+            $interest_rate = 8.90;
+            break;
+          case '9':
+            $interest_rate = 9.10;
+            break;
+          case '10':
+            $interest_rate = 10.11;
+            break;
+          case '11':
+            $interest_rate = 11.22;
+            break;
+          case '12':
+            $interest_rate = 12.33;
             break;
           default:
-            throw new Exception("Interest mode {$interestMode} is unsupported.");
+            # code...
             break;
         }
+        $total = (floatval($interest_rate / 100) * floatval($orderTotal) + floatval($orderTotal));
 
         return $total;
-    }
-
-    protected static function calculateTotalSimpleInterest($interestRate, $orderTotal, $installments)
-    {
-        return (floatval($interestRate / 100) * floatval($orderTotal) * intval($installments)) + floatval($orderTotal);
-    }
-
-    protected static function calculateTotalCompoundInterest($interestRate, $orderTotal, $installments)
-    {
-        return $orderTotal * pow((1.0 + floatval($interestRate / 100)), $installments);
     }
 }
