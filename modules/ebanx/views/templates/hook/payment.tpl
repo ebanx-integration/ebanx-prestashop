@@ -2,7 +2,7 @@
 <div class="row">
     <div class="col-xs-12 col-md-6">
         <p class="payment_module">
-            <a class="cash" href="{$action_checkout}" title="Boleto bancário EBANX, TEF">
+            <a class="cash" href="{$action_checkout}" title="EBANX - Boleto bancário, Cartão de Crédito e TEF">
                     {l s='Boleto bancário EBANX, TEF' mod='ebanx'}
             </a>
         </p>

@@ -437,31 +437,4 @@ class Ebanx extends PaymentModule
 
         return Db::getInstance()->getRow($sql);
     }
-
-    public static function calculateTotalWithInterest($interestMode, $interestRate, $orderTotal, $installments)
-    {
-        switch ($interestMode) {
-          case 'compound':
-            $total = self::calculateTotalCompoundInterest($interestRate, $orderTotal, $installments);
-            break;
-          case 'simple':
-            $total = self::calculateTotalSimpleInterest($interestRate, $orderTotal, $installments);
-            break;
-          default:
-            throw new Exception("Interest mode {$interestMode} is unsupported.");
-            break;
-        }
-
-        return $total;
-    }
-
-    protected static function calculateTotalSimpleInterest($interestRate, $orderTotal, $installments)
-    {
-        return (floatval($interestRate / 100) * floatval($orderTotal) * intval($installments)) + floatval($orderTotal);
-    }
-
-    protected static function calculateTotalCompoundInterest($interestRate, $orderTotal, $installments)
-    {
-        return $orderTotal * pow((1.0 + floatval($interestRate / 100)), $installments);
-    }
 }
