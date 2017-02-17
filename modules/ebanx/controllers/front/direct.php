@@ -36,11 +36,11 @@ require_once dirname(dirname(dirname(__FILE__))) . '/bootstrap.php';
  * The checkout controller. It creates a new order and redirects the user
  * to EBANX.
  */
-class EbanxExpressDirectModuleFrontController extends ModuleFrontController
+class EbanxDirectModuleFrontController extends ModuleFrontController
 {
     public function initContent()
     {
-        $testEnv  = (intval(Configuration::get('EBANX_EXPRESS_TESTING')) == 1);
+        $testEnv  = (intval(Configuration::get('EBANX_TESTING')) == 1);
 
         $cart     = $this->context->cart;
         $customer = new Customer($cart->id_customer);
@@ -57,8 +57,6 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
         // Fix missing street number
         $streetNumber = preg_replace('/\D/', '', $address->address1);
         $streetNumber = ($streetNumber > 0) ? $streetNumber : '1';
-
-
 
         $params = array(
             'mode'      => 'full'
@@ -84,7 +82,8 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
         );
 
         // Add credit card fields to request
-
+        if ($method == 'creditcard')
+        {
             $params['payment']['creditcard'] = array(
                 'card_number'   => Tools::getValue('ebanx_cc_number')
               , 'card_name'     => Tools::getValue('ebanx_cc_name')
@@ -97,15 +96,14 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
             {
               if (intval(Tools::getValue('ebanx_installments')) > 1 && Tools::getValue('ebanx_installments') < 12)
               {
-                $interestRate = floatval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_INT'));
-                $interestMode = Configuration::get('EBANX_EXPRESS_INSTALLMENTS_MOD');
 
                 $installments = intval(Tools::getValue('ebanx_installments'));
 
                 $params['payment']['instalments']  = $installments;
-                $params['payment']['amount_total'] = EbanxExpress::calculateTotalWithInterest($interestMode, $interestRate, $cart->getOrderTotal(true), $installments);
+                $params['payment']['amount_total'] = Ebanx::calculateTotalWithInterest($cart->getOrderTotal(true), $installments);
               }
             }
+        }
 
         try
         {
@@ -116,7 +114,7 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
             $errorMessage = $this->getEbanxErrorMessage($e->getMessage());
 
             // Go back to the other screen
-            Tools::redirect($baseUrl . 'index.php?fc=module&module=ebanxexpress&controller=payment&method=creditcard' . '&ebanx_error=' . urlencode($errorMessage));
+            Tools::redirect($_SERVER['HTTP_REFERER'] . '&ebanx_error=' . urlencode($errorMessage));
         }
 
         if ($response->status == 'SUCCESS')
@@ -124,24 +122,35 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
             $baseUrl = _PS_BASE_URL_ . __PS_BASE_URI__;
 
             // Create a new order via validateOrder()
-            $ebanx = new EbanxExpress();
-
-            $ebanx->validateOrder($cart->id, Configuration::get('EBANX_EXPRESS_STATUS_OPEN'), $total, $ebanx->displayName);
+            $ebanx = new Ebanx();
+            $ebanx->validateOrder($cart->id, Configuration::get('EBANX_STATUS_OPEN'), $total, $ebanx->displayName);
 
             // If the request was successfull, create a new order
             $order = new Order($ebanx->currentOrder);
             $hash  = $response->payment->hash;
 
-            $ebanx->saveOrderData($order->id, $hash, $method);
-            Tools::redirect($baseUrl . 'index.php?fc=module&module=ebanxexpress&controller=success&hash=' . $hash);
-
+            if ($method == 'boleto')
+            {
+                $ebanx->saveOrderData($order->id, $hash, $method, $response->payment->boleto_url);
+                Tools::redirect($baseUrl . 'index.php?fc=module&module=ebanx&controller=success&hash=' . $hash);
+            }
+            else if ($method == 'tef')
+            {
+              $ebanx->saveOrderData($order->id, $hash, $method);
+              Tools::redirect($response->redirect_url);
+            }
+            else
+            {
+              $ebanx->saveOrderData($order->id, $hash, $method);
+              Tools::redirect($baseUrl . 'index.php?fc=module&module=ebanx&controller=success&hash=' . $hash);
+            }
         }
         else
         {
             $errorMessage = $this->getEbanxErrorMessage($response->status_code);
 
             // Go back to the other screen
-            Tools::redirect($baseUrl . 'index.php?fc=module&module=ebanxexpress&controller=payment&method=creditcard' . '&ebanx_error=' . urlencode($errorMessage));
+            Tools::redirect($_SERVER['HTTP_REFERER'] . '&ebanx_error=' . urlencode($errorMessage));
         }
     }
 
