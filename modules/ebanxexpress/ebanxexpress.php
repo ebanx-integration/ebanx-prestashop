@@ -269,11 +269,6 @@ class EbanxExpress extends PaymentModule
             $errors[] = $this->l('Testing mode must be enabled or disabled.');
         }
 
-        if (strlen($integrationKey) != 100)
-        {
-            $errors[] = $this->l('The integration key is not valid.');
-        }
-
         if (!in_array(intval($installmentsActive), array(0, 1)))
         {
             $errors[] = $this->l('Installments must be enabled or disabled.');
@@ -282,16 +277,6 @@ class EbanxExpress extends PaymentModule
         if (!in_array(intval($installmentsNumber), range(1, 12)))
         {
             $errors[] = $this->l('The maximum installments number must be between 1 and 12.');
-        }
-
-        if (!is_numeric($interestRate))
-        {
-            $errors[] = $this->l('The interest rate must be a number.');
-        }
-
-        if (!in_array(intval($installmentsMode), array('simple', 'compound')))
-        {
-            $errors[] = $this->l('The interest calculation must be either simple or compound.');
         }
 
         if (count($errors))
