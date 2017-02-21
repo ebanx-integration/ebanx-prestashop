@@ -76,6 +76,7 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
             , 'city'          => $address->city
             , 'country'       => strtolower($country->iso_code)
             , 'phone_number'  => (strlen($address->phone) > 0) ? $address->phone : $address->phone_mobile
+            , 'plugin_source'     => 'Prestashop ver. ' . _PS_VERSION_
         );
 
         try

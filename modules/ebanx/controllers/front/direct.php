@@ -80,6 +80,7 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
             , 'city'          => $address->city
             , 'country'       => 'br'
             , 'phone_number'  => (strlen($address->phone) > 0) ? $address->phone : $address->phone_mobile
+            , 'plugin_source'     => 'Prestashop ver. ' . _PS_VERSION_
           )
         );
 
