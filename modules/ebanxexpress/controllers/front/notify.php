@@ -36,7 +36,7 @@ require_once dirname(dirname(dirname(__FILE__))) . '/bootstrap.php';
  * The notify action controller. It's called by the EBANX robot when the payment
  * is updated.
  */
-class Notify extends FrontController
+class EbanxNotifyModuleFrontController extends ModuleFrontController
 {
   protected $errorMessage = '';
 
