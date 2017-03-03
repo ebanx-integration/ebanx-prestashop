@@ -627,6 +627,7 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
                 var_dump( $errors[$errorCode][$this->context->language->iso_code]);
                 return $errors[$errorCode][$this->context->language->iso_code];
             }
+            return $errors[$errorCode]['en'];
         }
 
         return 'Ocorreu um erro desconhecido. Por favor contacte o administrador.';
