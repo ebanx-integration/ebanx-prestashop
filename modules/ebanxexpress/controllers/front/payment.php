@@ -85,7 +85,7 @@ class EbanxExpressPaymentModuleFrontController extends ModuleFrontController
         $currency = new Currency($this->context->cart->id_currency);
 
         $smarty->assign(array(
-            'action_url'          => _PS_BASE_URL_ . __PS_BASE_URI__ . 'index.php?fc=module&module=ebanxexpress&controller=direct'
+            'action_url'          => ($this->ssl ? _PS_BASE_URL_SSL_ : _PS_BASE_URL_). __PS_BASE_URI__ . 'index.php?fc=module&module=ebanxexpress&controller=direct'
           , 'total'               => $total
           , 'image'               => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img/ebanx.png'
           , 'enable_installments' => (intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_ACT')) == 1)
