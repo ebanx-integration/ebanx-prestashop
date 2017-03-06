@@ -619,12 +619,16 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
                 "en" => "The address could not be retrieved.",
                 "esp" =>""
             )
+            , "BP-DPAR-4" => array(
+                "br" =>"Chave de integração inválida.",
+                "en" => "Invalid integration key.",
+                "esp" =>""
+            )
         );
 
         if (array_key_exists($errorCode, $errors))
         {
             if (array_key_exists($this->context->language->iso_code ,$errors[$errorCode])) {
-                var_dump( $errors[$errorCode][$this->context->language->iso_code]);
                 return $errors[$errorCode][$this->context->language->iso_code];
             }
             return $errors[$errorCode]['en'];

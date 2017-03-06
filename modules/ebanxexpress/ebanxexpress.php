@@ -307,6 +307,12 @@ class EbanxExpress extends PaymentModule
         if ($length != 100 && $lenght != 30)
         {
             $errors[] = $this->l('The integration key is not valid.');
+        }else if ((strpos($integrationKey, 'test_pk') !== false)){
+            $errors[] = $this->l('The integration key is not valid.');
+        }
+
+        if(intval($testing)==0 && (strpos($integrationKey, 'test') !== false)){
+            $errors[] = $this->l('You are using a Test key in a live environment. Please check your settings.');
         }
 
         if (!in_array(intval($installmentsActive), array(0, 1)))
