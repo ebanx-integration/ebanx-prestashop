@@ -701,11 +701,11 @@ class EbanxExpress extends PaymentModule
         $this->context->smarty->assign(
             array(
                 'action_url_boleto' => $baseUrl . 'index.php?fc=module&module=ebanxexpress&controller=payment&method=boleto'
-              , 'image_boleto'      => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img2/boleto.png'
+              , 'image_boleto'      => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img2/botao_boleto.png'
               , 'action_url_cc'     => $baseUrl . 'index.php?fc=module&module=ebanxexpress&controller=payment&method=creditcard'
               , 'image_cc'          => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img2/botao_credito.png'
               , 'action_url_tef'    => $baseUrl . 'index.php?fc=module&module=ebanxexpress&controller=payment&method=tef'
-              , 'image_tef'         => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img2/tef.png'
+              , 'image_tef'         => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img2/botao_debito.png'
               , 'ebanx_boleto_enabled' => intval(Configuration::get('EBANX_ENABLE_BOLETO')) == 1
               , 'ebanx_cc_enabled'     => intval(Configuration::get('EBANX_ENABLE_CREDITCARD')) == 1
               , 'ebanx_tef_enabled'    => intval(Configuration::get('EBANX_ENABLE_TEF')) == 1

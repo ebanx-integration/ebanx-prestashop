@@ -318,7 +318,6 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
                 "br" =>"Número de parcelas inválido.",
                 "en" => "Invalid value for instalment.",
                 "esp" =>"Número de cuotas es inválido."
-
             )
             , "BP-DR-35" => array(
                 "br" =>"Método de pagamento inválido: X.",
@@ -359,7 +358,7 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
                 "br" =>"É necessário informar o CPF do responsável pelo pagamento.",
                 "en" => "The responsible document was not filled.",
                 "esp" =>"Debe informar el CPF del responsable del pago."
-
+            )
             , "BP-DR-45" => array(
                 "br" =>"É necessário informar a data de nascimento do responsável pelo pagamento.",
                 "en" => "The responsible birthdate was not filled.",
@@ -549,12 +548,12 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
                 "br" =>"O valor do pagamento deve ser positivo: X.",
                 "en" => "Amount must be positive.",
                 "esp" =>"La cantidad del pago debe ser positivo: X."
-
+            )
             , "BP-R-10" => array(
                 "br" =>"O valor do pagamento deve ser maior do que X.",
                 "en" => "The amount is too low.",
                 "esp" =>"La cantidad del pago debe ser mayor que X."
-            )r
+            )
             , "BP-R-11" => array(
                 "br" =>"O método de pagamento não suporta parcelamento.",
                 "en" => "Payment type does not support instalments",

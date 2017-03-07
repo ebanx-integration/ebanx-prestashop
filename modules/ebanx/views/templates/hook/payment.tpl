@@ -1,11 +1,14 @@
 {if $country_code == 'BR'}
 <div class="row">
     <div class="col-xs-12 col-md-6">
-        <p class="payment_module">
+        <a target="_blank" href="{$action_checkout}" style="margin-bottom: 10px; display: block;">
+            <img src="{$image_checkout}"  alt="Checkout - Boleto Bancário, Cartão de Crédito" style="width: 100%; height: 100%;">
+        </a>
+        <!-- <p class="payment_module">
             <a class="cash" href="{$action_checkout}" title="EBANX Checkout - Boleto bancário, Cartão de Crédito e TEF">
                     {l s='EBANX Checkout - Boleto bancário, Cartão de Crédito e TEF' mod='ebanx'}
             </a>
-        </p>
+        </p> -->
     </div>
 </div>
 {/if}

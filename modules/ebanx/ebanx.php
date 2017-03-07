@@ -375,6 +375,7 @@ class Ebanx extends PaymentModule
         $this->context->smarty->assign(
             array(
                 'country_code'         => $country->iso_code
+              , 'image_checkout'      => __PS_BASE_URI__ . 'modules/ebanx/assets/img/botao_checkout.png'
               , 'action_checkout'   => $baseUrl . 'index.php?fc=module&module=ebanx&controller=checkout'
             )
         );
