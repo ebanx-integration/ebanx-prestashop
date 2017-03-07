@@ -15,7 +15,7 @@
     <div class="row">
         <div class="col-xs-12 col-md-6">
             <p class="payment_module">
-                <a class="cheque" href="{$action_url_tef}" title="{l s='Transferência eletrônica EBANX' mod='ebanxexpress'}">
+                <a class="cheque" href="{$action_url_tef}" title="{l s='Transferência eletrônica via EBANX' mod='ebanxexpress'}">
                 {l s='Transferência eletrônica EBANX' mod='ebanxexpress'}
                 </a>
             </p>
