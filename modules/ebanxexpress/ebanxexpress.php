@@ -304,7 +304,7 @@ class EbanxExpress extends PaymentModule
             $errors[] = $this->l('Testing mode must be enabled or disabled.');
         }
         $length = strlen($integrationKey);
-        if ($length != 100 && $lenght != 30)
+        if ($length != 100 && $length != 30)
         {
             $errors[] = $this->l('The integration key is not valid.');
         }else if ((strpos($integrationKey, 'test_pk') !== false)){
@@ -701,11 +701,11 @@ class EbanxExpress extends PaymentModule
         $this->context->smarty->assign(
             array(
                 'action_url_boleto' => $baseUrl . 'index.php?fc=module&module=ebanxexpress&controller=payment&method=boleto'
-              , 'image_boleto'      => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img/boleto.png'
+              , 'image_boleto'      => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img2/boleto.png'
               , 'action_url_cc'     => $baseUrl . 'index.php?fc=module&module=ebanxexpress&controller=payment&method=creditcard'
-              , 'image_cc'          => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img/creditcard.png'
+              , 'image_cc'          => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img2/botao_credito.png'
               , 'action_url_tef'    => $baseUrl . 'index.php?fc=module&module=ebanxexpress&controller=payment&method=tef'
-              , 'image_tef'         => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img/tef.png'
+              , 'image_tef'         => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img2/tef.png'
               , 'ebanx_boleto_enabled' => intval(Configuration::get('EBANX_ENABLE_BOLETO')) == 1
               , 'ebanx_cc_enabled'     => intval(Configuration::get('EBANX_ENABLE_CREDITCARD')) == 1
               , 'ebanx_tef_enabled'    => intval(Configuration::get('EBANX_ENABLE_TEF')) == 1
