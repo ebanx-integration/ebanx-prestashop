@@ -26,14 +26,14 @@
     {if $ebanx_cc_enabled}
     <div class="row">
         <div class="col-xs-12 col-md-6">
-            <a target="_blank" href="{$action_url_boleto}" style="margin-top: 15px; display: block;">
+            <!-- <a target="_blank" href="{$action_url_boleto}" style="margin-top: 15px; display: block;">
                 <img src="{$image_cc}"  alt="Cartão de Crédito">
-            </a>
-            <!-- <p class="payment_module">
+            </a> -->
+            <p class="payment_module">
                 <a class="bankwire" href="{$action_url_cc}" title="{l s='Cartão de crédito' mod='ebanxexpress'}">
                 {l s='Cartão de crédito' mod='ebanxexpress'}
                 </a>
-            </p> -->
+            </p>
         </div>
     </div>
     {/if}
