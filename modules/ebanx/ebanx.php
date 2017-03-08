@@ -371,13 +371,18 @@ class Ebanx extends PaymentModule
         $currency = new Currency($cart->id_currency);
         $address  = new Address($cart->id_address_invoice);
         $country  = new Country($address->id_country);
+        $countries_available =  array('BR', 'MX', 'CO', 'PE', 'CL');
+
+        if (Module::isInstalled('ebanxexpress') && $country->iso_code == 'BR') {
+            array_shift($countries_available);
+        }
 
         $this->context->smarty->assign(
             array(
                 'country_code'         => $country->iso_code
-              , 'express_enable' => Module::isInstalled('ebanxexpress')
               , 'image_checkout'      => __PS_BASE_URI__ . 'modules/ebanx/assets/img/botao_checkout.png'
               , 'action_checkout'   => $baseUrl . 'index.php?fc=module&module=ebanx&controller=checkout'
+              , 'countries_available'   => $countries_available
             )
         );
 
