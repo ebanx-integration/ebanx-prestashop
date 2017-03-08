@@ -1,4 +1,4 @@
-{if $country_code == 'BR'}
+{if $country_code == 'BR' && express_enable == 1}
 <div class="row">
     <div class="col-xs-12 col-md-6">
         <a target="_blank" href="{$action_checkout}" style="margin-bottom: 10px; display: block;">
