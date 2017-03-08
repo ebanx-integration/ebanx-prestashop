@@ -238,10 +238,16 @@ class Ebanx extends PaymentModule
         {
             $errors[] = $this->l('Testing mode must be enabled or disabled.');
         }
-
-        if (strlen($integrationKey) != 100)
+        $length = strlen($integrationKey);
+        if ($length != 100 && $length != 30)
         {
             $errors[] = $this->l('The integration key is not valid.');
+        }else if ((strpos($integrationKey, 'test_pk') !== false)){
+            $errors[] = $this->l('The integration key is not valid.');
+        }
+
+        if(intval($testing)==0 && (strpos($integrationKey, 'test') !== false)){
+            $errors[] = $this->l('You are using a Test key in a live environment. Please check your settings.');
         }
 
         if (count($errors))
