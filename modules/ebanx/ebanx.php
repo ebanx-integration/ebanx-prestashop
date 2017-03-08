@@ -383,10 +383,22 @@ class Ebanx extends PaymentModule
             array_shift($countries_available);
         }
 
+        if ($country->iso_code == 'BR') {
+            $imagename = 'modules/ebanx/assets/img/botao_checkout.png';
+        }elseif ($country->iso_code == 'MX') {
+            $imagename = 'modules/ebanx/assets/img/botao_checkout_mx.png';
+        }elseif ($country->iso_code == 'CO') {
+            $imagename = 'modules/ebanx/assets/img/botao_checkout_co.png';
+        }elseif ($country->iso_code == 'PE') {
+            $imagename = 'modules/ebanx/assets/img/botao_checkout_pe.png';
+        }elseif ($country->iso_code == 'CL') {
+            $imagename = 'modules/ebanx/assets/img/botao_checkout_cl.png';
+        }
+
         $this->context->smarty->assign(
             array(
                 'country_code'         => $country->iso_code
-              , 'image_checkout'      => __PS_BASE_URI__ . 'modules/ebanx/assets/img/botao_checkout.png'
+              , 'image_checkout'      => __PS_BASE_URI__ . $imagename
               , 'action_checkout'   => $baseUrl . 'index.php?fc=module&module=ebanx&controller=checkout'
               , 'countries_available'   => $countries_available
             )
