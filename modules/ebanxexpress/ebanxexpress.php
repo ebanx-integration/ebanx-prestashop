@@ -178,7 +178,6 @@ class EbanxExpress extends PaymentModule
 
         // Setup status translation
         $statusId = (int) Db::getInstance()->Insert_ID();
-        $prefix = _DB_PREFIX_;
 
         $sql = new DbQuery();
         $sql->select('id_lang');
@@ -188,7 +187,7 @@ class EbanxExpress extends PaymentModule
         $langId =  Db::getInstance()->executeS($sql);
 
         $language = array(
-            'id_lang'        => (int) $langId
+            'id_lang'        => (int) $langId[0]['id_lang']
           , 'id_order_state' => $statusId
           , 'name'           => 'Awaiting EBANX payment'
           , 'template'       => ''
