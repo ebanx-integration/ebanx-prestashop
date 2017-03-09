@@ -182,13 +182,13 @@ class EbanxExpress extends PaymentModule
 
         $sql = new DbQuery();
         $sql->select('id_lang');
-        $sql->from(_DB_PREFIX_ .'lang');
+        $sql->from('lang');
         $sql->orderBy('id_lang');
         $sql->limit('1');
         $langId =  Db::getInstance()->executeS($sql);
 
         $language = array(
-            'id_lang'        => $langId
+            'id_lang'        => (int) $langId
           , 'id_order_state' => $statusId
           , 'name'           => 'Awaiting EBANX payment'
           , 'template'       => ''
