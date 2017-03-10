@@ -80,7 +80,7 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
             , 'city'          => $address->city
             , 'country'       => 'br'
             , 'phone_number'  => (strlen($address->phone) > 0) ? $address->phone : $address->phone_mobile
-            , 'notification_url' => _PS_BASE_URL_.'/index.php?fc=module&module=ebanxexpress&controller=notify'
+            , 'notification_url' => _PS_BASE_URL_ . __PS_BASE_URI__.'index.php?fc=module&module=ebanxexpress&controller=notify'
           )
         );
 
