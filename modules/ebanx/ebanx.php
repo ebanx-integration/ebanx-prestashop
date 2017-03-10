@@ -132,6 +132,7 @@ class Ebanx extends PaymentModule
         $sql->select('id_lang');
         $sql->from('lang');
         $sql->orderBy('id_lang');
+        $sql->where('active = 1');
         $sql->limit('1');
         $langId =  Db::getInstance()->executeS($sql);
 
