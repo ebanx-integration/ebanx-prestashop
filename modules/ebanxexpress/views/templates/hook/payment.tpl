@@ -22,7 +22,7 @@
     {if $ebanx_cc_enabled}
     <div class="row">
         <div class="col-xs-12 col-md-6">
-            <a href="{$action_url_boleto}" style="margin-bottom: 10px; display: block;">
+            <a href="{$action_url_cc}" style="margin-bottom: 10px; display: block;">
                 <img src="{$image_cc}"  alt="Cartão de Crédito" style="width: 100%; height: 100%;">
             </a>
         </div>
