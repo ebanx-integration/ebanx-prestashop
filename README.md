@@ -25,6 +25,10 @@ git clone --recursive https://github.com/ebanx/ebanx-prestashop.git
 8. That's all!
 
 ## Changelog
+* 2.7.0: Change all images adding the EBANX new logo,
+         Add Boleto and TEF for EBANX Express, Add integration key validations,
+         Add instalments rate configuration in the Admin panel of the module,
+         Small code fixes
 * 2.6.1: Bug fixes
 * 2.6.0: Created EBANX Express and EBANX Standard Checkout
 * 2.5.0: integrated Peru using EBANX Checkout
