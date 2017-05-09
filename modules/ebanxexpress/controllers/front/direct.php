@@ -97,7 +97,7 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
             // If has installments, adjust total
             if (intval(Tools::getValue('ebanx_installments')) > 1)
             {
-              if (intval(Tools::getValue('ebanx_installments')) > 1 && Tools::getValue('ebanx_installments') < 12)
+              if (intval(Tools::getValue('ebanx_installments')) > 1 && Tools::getValue('ebanx_installments') <= 12)
               {
                 $installments = intval(Tools::getValue('ebanx_installments'));
 
