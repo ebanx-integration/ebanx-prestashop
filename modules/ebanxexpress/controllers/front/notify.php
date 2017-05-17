@@ -36,7 +36,7 @@ require_once dirname(dirname(dirname(__FILE__))) . '/bootstrap.php';
  * The notify action controller. It's called by the EBANX robot when the payment
  * is updated.
  */
-class Notify extends FrontController
+class EbanxExpressNotifyModuleFrontController extends ModuleFrontController
 {
   protected $errorMessage = '';
 
@@ -91,8 +91,8 @@ class Notify extends FrontController
       return false;
     }
 
-    $status  = Ebanx::getOrderStatus($response->payment->status);
-    $orderId = Ebanx::findOrderIdByHash($hash);
+    $status  = EbanxExpress::getOrderStatus($response->payment->status);
+    $orderId = EbanxExpress::findOrderIdByHash($hash);
 
     // No order found
     if (intval($orderId) == 0)
