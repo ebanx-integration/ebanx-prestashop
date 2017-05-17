@@ -44,7 +44,7 @@ class Ebanx extends PaymentModule
     {
         $this->name     = 'ebanx';
         $this->tab      = 'payments_gateways';
-        $this->version  = '2.6.0';
+        $this->version  = '2.7.0';
         $this->author   = 'EBANX';
 
         $this->currencies = true;
@@ -128,8 +128,16 @@ class Ebanx extends PaymentModule
 
         // Setup status translation
         $statusId = (int) Db::getInstance()->Insert_ID();
+        $sql = new DbQuery();
+        $sql->select('id_lang');
+        $sql->from('lang');
+        $sql->orderBy('id_lang');
+        $sql->where('active = 1');
+        $sql->limit('1');
+        $langId =  Db::getInstance()->executeS($sql);
+
         $language = array(
-            'id_lang'        => 1
+            'id_lang'        => (int) $langId[0]['id_lang']
           , 'id_order_state' => $statusId
           , 'name'           => 'Awaiting EBANX payment'
           , 'template'       => ''
@@ -237,6 +245,18 @@ class Ebanx extends PaymentModule
         if (!in_array(intval($testing), array(0, 1)))
         {
             $errors[] = $this->l('Testing mode must be enabled or disabled.');
+        }
+
+        $length = strlen($integrationKey);
+        if ($length != 100 && $length != 30)
+        {
+            $errors[] = $this->l('The integration key is not valid.');
+        }else if ((strpos($integrationKey, 'test_pk') !== false)){
+            $errors[] = $this->l('The integration key is not valid.');
+        }
+
+        if(intval($testing)==0 && (strpos($integrationKey, 'test') !== false)){
+            $errors[] = $this->l('You are using a Test key in a live environment. Please check your settings.');
         }
 
         if (count($errors))
@@ -366,11 +386,30 @@ class Ebanx extends PaymentModule
         $currency = new Currency($cart->id_currency);
         $address  = new Address($cart->id_address_invoice);
         $country  = new Country($address->id_country);
+        $countries_available =  array('BR', 'MX', 'CO', 'PE', 'CL');
+
+        if (Module::isInstalled('ebanxexpress') && $country->iso_code == 'BR') {
+            array_shift($countries_available);
+        }
+
+        if ($country->iso_code == 'BR') {
+            $imagename = 'modules/ebanx/assets/img/botao_checkout.png';
+        }elseif ($country->iso_code == 'MX') {
+            $imagename = 'modules/ebanx/assets/img/botao_checkout_mx.png';
+        }elseif ($country->iso_code == 'CO') {
+            $imagename = 'modules/ebanx/assets/img/botao_checkout_co.png';
+        }elseif ($country->iso_code == 'PE') {
+            $imagename = 'modules/ebanx/assets/img/botao_checkout_pe.png';
+        }elseif ($country->iso_code == 'CL') {
+            $imagename = 'modules/ebanx/assets/img/botao_checkout_cl.png';
+        }
 
         $this->context->smarty->assign(
             array(
                 'country_code'         => $country->iso_code
+              , 'image_checkout'      => __PS_BASE_URI__ . $imagename
               , 'action_checkout'   => $baseUrl . 'index.php?fc=module&module=ebanx&controller=checkout'
+              , 'countries_available'   => $countries_available
             )
         );
 

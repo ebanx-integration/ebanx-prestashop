@@ -29,17 +29,17 @@
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
-
+require_once dirname(dirname(dirname(__FILE__))) . '/bootstrap.php';
 /**
  * The payment controller. It builds the payment form.
  */
 class EbanxExpressPaymentModuleFrontController extends ModuleFrontController
-{  
+{
     public $ssl = true;
 
     public function __construct()
     {
-      $this->ssl = (intval(Configuration::get('PS_SSL_ENABLED')) == 1);
+      $this->ssl = (intval(Configuration::get('PS_SSL_ENABLED')) == 1) && (intval(Configuration::get('EBANX_EXPRESS_TESTING')) == 0);
       parent::__construct();
     }
 
@@ -53,7 +53,7 @@ class EbanxExpressPaymentModuleFrontController extends ModuleFrontController
 
 
         // Calculate the total and the total with interest
-        $total    = $this->context->cart->getOrderTotal(true, Cart::BOTH);
+        $total = $this->context->cart->getOrderTotal(true, Cart::BOTH);
 
         $maxInstallments = intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_NUM'));
 
@@ -62,10 +62,12 @@ class EbanxExpressPaymentModuleFrontController extends ModuleFrontController
         switch (strtoupper(($this->context->currency->iso_code)))
         {
           case 'USD':
-            $totalReal = $total * 2.5;
+            $exchangeRate = \Ebanx\Ebanx::doExchange(array('currency_code' => 'USD'));
+            $totalReal = $total * $exchangeRate->currency_rate->rate;
             break;
           case 'EUR':
-            $totalReal = $total * 3.4;
+            $exchangeRate = \Ebanx\Ebanx::doExchange(array('currency_code' => 'EUR'));
+            $totalReal = $total * $exchangeRate->currency_rate->rate;
             break;
           case 'BRL':
           default:
@@ -73,17 +75,17 @@ class EbanxExpressPaymentModuleFrontController extends ModuleFrontController
             break;
         }
 
-        // Enforce minimum installment value of R$25
-        if (($totalReal / 35) < $maxInstallments)
+        // Enforce minimum installment value of R$20
+        if (($totalReal / 20) < $maxInstallments)
         {
-          $maxInstallments = floor($totalReal / 30);
+          $maxInstallments = floor($totalReal / 20);
         }
 
 
         $currency = new Currency($this->context->cart->id_currency);
 
         $smarty->assign(array(
-            'action_url'          => ($this->ssl ? _PS_BASE_URL_SSL_ : _PS_BASE_URL_) . __PS_BASE_URI__ . 'index.php?fc=module&module=ebanxexpress&controller=direct'
+            'action_url'          => ($this->ssl ? _PS_BASE_URL_SSL_ : _PS_BASE_URL_). __PS_BASE_URI__ . 'index.php?fc=module&module=ebanxexpress&controller=direct'
           , 'total'               => $total
           , 'image'               => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img/ebanx.png'
           , 'enable_installments' => (intval(Configuration::get('EBANX_EXPRESS_INSTALLMENTS_ACT')) == 1)

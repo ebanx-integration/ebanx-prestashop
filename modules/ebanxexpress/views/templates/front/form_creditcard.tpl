@@ -20,7 +20,7 @@
   {/if}
 
   <form action="{$action_url}" method="post" id="ebanx_form_cc" class="std ebanx-payment-form">
-    <input type="hidden" name="ebanxexpress_payment_method" value="creditcard" />
+    <input type="hidden" name="ebanx_payment_method" value="creditcard" />
 
     <div class="form-group">
       <label for="ebanx_document">CPF <sup>*</sup></label>
@@ -72,7 +72,7 @@
     <div class="form-group">
       <label for="ebanx_installments">Parcelas <sup>*</sup></label>
       <select class="form-control" id="ebanx_installments" name="ebanx_installments" required>
-        <option></option> 
+        <option></option>
         {for $i = 1 to $max_installments}
           {*<option value="{$i}">{$i}x {$installments_total[$i] / $i}</option>*}
           <option value="{$i}">{$i}x {displayPrice price =($installments_total[$i] / $i)}</option>

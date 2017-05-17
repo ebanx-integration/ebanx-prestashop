@@ -50,10 +50,10 @@ class EbanxExpressSuccessModuleFrontController extends ModuleFrontController
 
     $smarty->assign(array(
         'ebanx'    => $ebanx
-      , 'img_path' => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img/'
+      , 'img_path' => __PS_BASE_URI__ . 'modules/ebanxexpress/assets/img2/'
       , 'url_orders' => _PS_BASE_URL_ . __PS_BASE_URI__ . 'index.php?controller=history'
     ));
-
-    $this->setTemplate('success.tpl');
+    $template = 'success.tpl';
+    $this->setTemplate($template);
   }
 }
