@@ -44,7 +44,7 @@ class Ebanx extends PaymentModule
     {
         $this->name     = 'ebanx';
         $this->tab      = 'payments_gateways';
-        $this->version  = '2.7.0';
+        $this->version  = '2.7.1';
         $this->author   = 'EBANX';
 
         $this->currencies = true;
@@ -386,7 +386,7 @@ class Ebanx extends PaymentModule
         $currency = new Currency($cart->id_currency);
         $address  = new Address($cart->id_address_invoice);
         $country  = new Country($address->id_country);
-        $countries_available =  array('BR', 'MX', 'CO', 'PE', 'CL');
+        $countries_available =  array('BR', 'MX', 'CO', 'PE', 'CL', 'AR');
 
         if (Module::isInstalled('ebanxexpress') && $country->iso_code == 'BR') {
             array_shift($countries_available);
@@ -402,6 +402,8 @@ class Ebanx extends PaymentModule
             $imagename = 'modules/ebanx/assets/img/botao_checkout_pe.png';
         }elseif ($country->iso_code == 'CL') {
             $imagename = 'modules/ebanx/assets/img/botao_checkout_cl.png';
+        }elseif ($country->iso_code == 'AR') {
+            $imagename = 'modules/ebanx/assets/img/botao_checkout_ar.png';
         }
 
         $this->context->smarty->assign(

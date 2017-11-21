@@ -78,7 +78,6 @@ class EbanxCheckoutModuleFrontController extends ModuleFrontController
             , 'phone_number'  => (strlen($address->phone) > 0) ? $address->phone : $address->phone_mobile
             , 'notification_url' => _PS_BASE_URL_ . __PS_BASE_URI__.'index.php?fc=module&module=ebanx&controller=notify'
         );
-
         try
         {
             \Ebanx\Config::set('directMode', false);
