@@ -46,5 +46,14 @@
         </div>
     </div>
     {/if}
+    {if $country_code == 'AR'}
+    <div class="row">
+        <div class="col-xs-12 col-md-6">
+            <a href="{$action_checkout}" style="margin-bottom: 10px; display: block;">
+                <img src="{$image_checkout}"  alt="Cupón de Pagos, PagoFácil e RapiPago" style="width: 100%; height: 100%;">
+            </a>
+        </div>
+    </div>
+    {/if}
 
 {/if}
