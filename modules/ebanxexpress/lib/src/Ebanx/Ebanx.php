@@ -42,7 +42,7 @@ class Ebanx
      * Library version
      * @var string
      */
-    const VERSION = '1.7.0';
+    const VERSION = '1.10.0';
 
     /**
      * Magic method that calls the Command Factory
@@ -53,7 +53,7 @@ class Ebanx
      */
     public static function __callStatic($name, $args)
     {
-        if (preg_match('/^do[\w]+/', $name))
+        if (preg_match('/^do|get[\w]+/', $name))
         {
             if (!isset($args[0]))
             {
