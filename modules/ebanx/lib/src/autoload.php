@@ -31,8 +31,11 @@
 
 require_once 'Ebanx/Ebanx.php';
 require_once 'Ebanx/Config.php';
-require_once 'Ebanx/Http/Client.php';
+require_once 'Ebanx/Http/AbstractClient.php';
+require_once 'Ebanx/Http/ClientFactory.php';
+require_once 'Ebanx/Http/ClientCurl.php';
 require_once 'Ebanx/Command/AbstractCommand.php';
+require_once 'Ebanx/Command/BankList.php';
 require_once 'Ebanx/Command/Factory.php';
 require_once 'Ebanx/Command/Validator.php';
 require_once 'Ebanx/Command/Request/Direct.php';
@@ -47,3 +50,5 @@ require_once 'Ebanx/Command/RefundOrCancel.php';
 require_once 'Ebanx/Command/Token.php';
 require_once 'Ebanx/Command/Zipcode.php';
 require_once 'Ebanx/Command/DocumentBalance.php';
+require_once 'Ebanx/Command/MerchantIntegrationProperties.php';
+require_once 'Ebanx/Command/MerchantIntegrationPublicProperties.php';

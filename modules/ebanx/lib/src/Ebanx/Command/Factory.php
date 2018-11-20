@@ -49,6 +49,12 @@ class Factory
         $class = '\\Ebanx\\Command\\';
 
         $className = str_replace('do', '', $name);
+
+        if ($className == $name)
+        {
+            $className = str_replace('get', '', $name);
+        }
+
         $class .= $className;
 
         // Request command is different depending on the checkout method (Ebanx or direct)

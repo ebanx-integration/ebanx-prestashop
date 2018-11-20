@@ -41,8 +41,8 @@ class Config
     /**
      * The API URLs for test and production
      */
-    const URL_TEST       = 'https://sandbox.ebanx.com/ws/';
-    const URL_PRODUCTION = 'https://api.ebanx.com/ws/';
+    const URL_TEST       = 'https://sandbox.ebanxpay.com/ws/';
+    const URL_PRODUCTION = 'https://api.ebanxpay.com/ws/';
 
     /**
      * The config object instance
@@ -64,7 +64,7 @@ class Config
     {
         self::$settings['directMode'] = false;
         self::$settings['testMode']   = false;
-        self::$settings['httpClient'] = '\\Ebanx\\Http\\Client';
+        self::$settings['httpClient'] = Http\ClientFactory::getInstance();
     }
 
     /**
