@@ -1,6 +1,6 @@
 [submodule "modules/ebanx/lib"]
 	path = modules/ebanx/lib
-	url = https://github.com/ebanx/ebanx-php.git
+	url = git@github.com:ebanx-integration/ebanx-php.git
 [submodule "modules/ebanxexpress/lib"]
 	path = modules/ebanxexpress/lib
-	url = https://github.com/ebanx/ebanx-php.git
+	url = git@github.com:ebanx-integration/ebanx-php.git
