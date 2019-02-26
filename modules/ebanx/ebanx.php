@@ -40,11 +40,13 @@ if (!defined('_PS_VERSION_'))
  */
 class Ebanx extends PaymentModule
 {
+    const VERSION = '2.7.1';
+
     public function __construct()
     {
         $this->name     = 'ebanx';
         $this->tab      = 'payments_gateways';
-        $this->version  = '2.7.1';
+        $this->version  = self::VERSION;
         $this->author   = 'EBANX';
 
         $this->currencies = true;

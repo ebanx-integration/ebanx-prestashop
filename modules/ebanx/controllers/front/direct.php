@@ -114,7 +114,7 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
         catch (\Exception $e)
         {
             $errorMessage = $this->getEbanxErrorMessage($e->getMessage());
-
+            $baseUrl = _PS_BASE_URL_ . __PS_BASE_URI__;
             // Go back to the other screen
             Tools::redirect($baseUrl . 'index.php?fc=module&module=ebanxexpress&controller=payment&method=creditcard' . '&ebanx_error=' . urlencode($errorMessage));
         }
@@ -139,7 +139,7 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
         else
         {
             $errorMessage = $this->getEbanxErrorMessage($response->status_code);
-
+            $baseUrl = _PS_BASE_URL_ . __PS_BASE_URI__;
             // Go back to the other screen
             Tools::redirect($baseUrl . 'index.php?fc=module&module=ebanxexpress&controller=payment&method=creditcard' . '&ebanx_error=' . urlencode($errorMessage));
         }
