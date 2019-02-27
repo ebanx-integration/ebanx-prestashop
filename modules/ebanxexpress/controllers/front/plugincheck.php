@@ -45,16 +45,11 @@ class EbanxExpressPlugincheckModuleFrontController extends ModuleFrontController
 			'php'              => phpversion(),
 			'sql'              => $this->getSQLVersion(),
 			'prestashop'       => _PS_VERSION_,
-			'ebanx-prestashop' => $this->getPluginVersion(),
+			'ebanx-prestashop' => EbanxExpress::VERSION,
 			'configs'          => $this->getConfigs(),
 			'plugins'          => $this->getModuleList(),
 		);
 		echo json_encode($plugincheck_list);
-	}
-
-	private function getPluginVersion() {
-		$ebanx = new EbanxExpress();
-		return $ebanx->version;
 	}
 
 	private function getSQLVersion() {

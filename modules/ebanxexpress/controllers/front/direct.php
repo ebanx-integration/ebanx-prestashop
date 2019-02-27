@@ -154,6 +154,7 @@ class EbanxExpressDirectModuleFrontController extends ModuleFrontController
         }
         else
         {
+            $baseUrl = _PS_BASE_URL_ . __PS_BASE_URI__;
             $errorMessage = $this->getEbanxErrorMessage($response->status_code);
 
             // Go back to the other screen
