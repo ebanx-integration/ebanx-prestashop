@@ -1,6 +1,11 @@
 <?php
 
 /**
+ * @deprecated This module is deprecated and no longer maintained.
+ *             See https://docs.ebanx.com/ for up-to-date integration options.
+ */
+
+/**
  * Copyright (c) 2013, EBANX Tecnologia da Informação Ltda.
  *  All rights reserved.
  *
