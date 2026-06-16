@@ -28,6 +28,9 @@
  * CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY,
  * OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+ *
+ * @deprecated This module is deprecated and no longer maintained.
+ *             See https://www.ebanx.com/business/en/developers for up-to-date integration options.
  */
 
 if (!defined('_PS_VERSION_'))
